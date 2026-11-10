@@ -93,7 +93,7 @@ function radioKey(x){return `${x.driver_number}|${x.date}|${x.recording_url}`}
 async function pollRadio(){if(!sessionKey||!radioPrimed)return;try{const records=await get(`team_radio?session_key=${sessionKey}`);const ordered=(records||[]).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date)));
 if(radioFirstPoll){ordered.forEach(x=>knownRadio.add(radioKey(x)));radioFirstPoll=false;return}
 for(const item of ordered){const key=radioKey(item);if(knownRadio.has(key))continue;knownRadio.add(key);if(radioEnabled&&selected.has(Number(item.driver_number))&&item.recording_url)radioQueue.push(item)}
-if(radioQueue.length){$('radioStatus').textContent=`${radioQueue.length} selected radio message(s) queued`;playNext()}else if(radioEnabled&&selected.size)$('radioStatus').textContent='Listening — waiting for selected drivers'}
+if(radioQueue.length){$('radioStatus').textContent=`${radioQueue.length} selected radio message(s) queued`;playNext()}else if(radioEnabled&&selected.size)$('radioStatus').textContent='Listening — waiting for selected drivers'
 }catch(e){$('radioStatus').textContent='Radio feed unavailable';}}
 function playNext(){if(!radioEnabled||radioBusy||!radioQueue.length)return;const item=radioQueue.shift(),d=driverList.find(x=>Number(x.driver_number)===Number(item.driver_number)),name=d?.name_acronym||`CAR ${item.driver_number}`,audio=$('radioAudio');radioBusy=true;$('radioStatus').textContent=`PLAYING ${name} TEAM RADIO`;audio.src=item.recording_url;audio.play().then(()=>{}).catch(()=>{radioBusy=false;$('radioStatus').textContent='Tap RADIO ON to allow audio playback';});}
 $('radioAudio').addEventListener('ended',()=>{radioBusy=false;playNext()});
