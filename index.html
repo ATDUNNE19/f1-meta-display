@@ -17,6 +17,17 @@ header{display:flex;align-items:flex-start;justify-content:space-between;padding
 .status{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.7px}
 .dot{width:8px;height:8px;border-radius:50%;background:#8b8b8b;display:inline-block}
 .dot.live{background:#50e080;box-shadow:0 0 9px #50e080}
+.radio-tools{display:flex;gap:8px;padding:9px 0 2px}
+.radio-tools button,.panel button{background:#17191c;color:#fff;border:1px solid #555;border-radius:6px;padding:7px 10px;font-size:10px;font-weight:900;letter-spacing:.4px}
+.radio-tools button.active{border-color:#50e080;color:#50e080}
+.radio-tools button:disabled{opacity:.45}
+#radioStatus{font-size:9px;color:var(--muted);align-self:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.panel{display:none;border:1px solid #555;border-radius:7px;padding:9px;margin:5px 0;background:#111;max-height:150px;overflow:auto}
+.panel.open{display:block}
+.panelTitle{font-size:10px;color:var(--muted);font-weight:800;margin-bottom:7px}
+#driverChoices{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.panel button.chosen{border-color:#50e080;color:#50e080;background:#102016}
+.panel .panelActions{display:flex;gap:8px;margin-top:8px}
 .columns,.driver{display:grid;grid-template-columns:30px minmax(0,1fr) 82px 82px;align-items:center;column-gap:8px}
 .columns{padding:12px 0 7px;color:var(--muted);font-size:9px;font-weight:800;letter-spacing:.55px;text-transform:uppercase}
 .columns span:nth-child(3),.columns span:nth-child(4){text-align:right}
@@ -31,26 +42,32 @@ header{display:flex;align-items:flex-start;justify-content:space-between;padding
 .gap.ahead{color:#d6d9dd}.gap.leader{color:#fff}
 footer{display:flex;justify-content:space-between;align-items:center;padding-top:11px;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.4px}
 #message{color:#e7e7e7;font-size:11px;text-align:center;padding:4px 0 0;min-height:16px}
-.flag{color:#ffdf54;font-weight:900}.error{color:#ff9b91}
-@media(max-width:420px){.screen{padding:16px 15px 12px}.columns,.driver{grid-template-columns:25px minmax(0,1fr) 69px 69px;column-gap:5px}.code{font-size:16px}.gap{font-size:11px}.brand{font-size:17px}}
+.error{color:#ff9b91}
+audio{display:none}
+@media(max-width:420px){.screen{padding:16px 15px 12px}.columns,.driver{grid-template-columns:25px minmax(0,1fr) 69px 69px;column-gap:5px}.code{font-size:16px}.gap{font-size:11px}.brand{font-size:17px}#driverChoices{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
 <body>
 <main class="screen" aria-label="Formula One live timing leaderboard">
 <header><div><div class="brand">F1 <span style="color:#ff3b30">LIVE TIMING</span></div><div class="session" id="session">CONNECTING TO TIMING DATA</div></div><div class="status"><span class="dot" id="dot"></span><span id="state">WAIT</span></div></header>
+<div class="radio-tools"><button id="radioToggle" type="button">RADIO OFF</button><button id="driverToggle" type="button">SELECT DRIVERS</button><span id="radioStatus">Choose drivers for team radio</span></div>
+<section class="panel" id="driverPanel"><div class="panelTitle">TAP EACH DRIVER YOU WANT TO HEAR</div><div id="driverChoices">Waiting for driver list…</div><div class="panelActions"><button id="allDrivers" type="button">SELECT ALL</button><button id="noDrivers" type="button">CLEAR</button><button id="closePanel" type="button">DONE</button></div></section>
 <div class="columns"><span>POS</span><span>DRIVER</span><span>TO AHEAD</span><span>TO LEAD</span></div>
 <section id="rows" aria-live="polite"></section><div id="message">Loading latest session…</div>
 <footer><span id="lap">LAP —</span><span id="updated">NO DATA YET</span></footer>
+<audio id="radioAudio" preload="none"></audio>
 </main>
 <script>
 (()=>{'use strict';
-const API='https://f1-openf1-proxy.alfydunne.workers.dev/v1',POLL_MS=10000,$=id=>document.getElementById(id);
-let sessionKey='latest',lastGood=null,busy=false,firstLoad=true,currentSession=null;
+const API='https://f1-openf1-proxy.alfydunne.workers.dev/v1',POLL_MS=10000,RADIO_POLL_MS=15000,$=id=>document.getElementById(id);
+let sessionKey='latest',lastGood=null,busy=false,firstLoad=true,currentSession=null,driverList=[],selected=new Set(),radioEnabled=false,radioPrimed=false,knownRadio=new Set(),radioQueue=[],radioBusy=false,radioFirstPoll=true;
+try{selected=new Set(JSON.parse(localStorage.getItem('f1-radio-drivers')||'[]').map(Number))}catch(e){}
 async function get(path){const r=await fetch(`${API}/${path}`,{cache:'no-store'});if(!r.ok)throw new Error(`OpenF1 returned ${r.status}`);return r.json()}
 function latestByDriver(records){const m=new Map();for(const x of records||[]){const old=m.get(x.driver_number);if(!old||String(x.date||'')>String(old.date||''))m.set(x.driver_number,x)}return m}
 function gapText(v){if(v===null||v===undefined)return '—';if(typeof v==='string')return v.toUpperCase().includes('LAP')?v.replace(' ',''):v;return `+${Number(v).toFixed(3)}`}
 function render(positionRows,intervalRows,drivers,session,lapRows){
 const positions=latestByDriver(positionRows),intervals=latestByDriver(intervalRows),driverMap=new Map((drivers||[]).map(d=>[d.driver_number,d]));
+driverList=(drivers||[]).slice().sort((a,b)=>(a.name_acronym||'').localeCompare(b.name_acronym||''));drawDriverChoices();
 const list=[...positions.entries()].map(([number,p])=>({number,position:Number(p.position),driver:driverMap.get(number),timing:intervals.get(number)})).filter(x=>Number.isFinite(x.position)&&x.position>0).sort((a,b)=>a.position-b.position).slice(0,10);
 if(!list.length)throw new Error('No classification data is available for the latest session yet.');
 $('rows').innerHTML=list.map(x=>{const d=x.driver||{},acronym=d.name_acronym||`#${x.number}`,colour=/^([0-9a-f]{6})$/i.test(d.team_colour||'')?`#${d.team_colour}`:'#888',t=x.timing||{};return `<div class="driver"><span class="pos">${x.position}</span><span class="identity"><i class="teambar" style="background:${colour}"></i><span class="code">${acronym}</span><span class="number">${x.number}</span></span><span class="gap ahead">${gapText(t.interval)}</span><span class="gap leader">${gapText(t.gap_to_leader)}</span></div>`}).join('');
@@ -59,13 +76,34 @@ const nums=(lapRows||[]).map(x=>Number(x.lap_number)).filter(Number.isFinite),ma
 $('lap').textContent=max?`LAP ${max}`:(session?.session_type||'SESSION');$('updated').textContent=`UPDATED ${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'})}`;
 $('dot').classList.add('live');$('state').textContent='DATA OK';$('message').textContent='GAPS: CAR AHEAD / RACE LEADER';$('message').className='';lastGood=Date.now();
 }
+function drawDriverChoices(){
+if(!driverList.length)return;
+$('driverChoices').innerHTML=driverList.map(d=>{const n=Number(d.driver_number),ac=d.name_acronym||d.full_name||String(n);return `<button type="button" class="${selected.has(n)?'chosen':''}" data-driver="${n}">${ac}</button>`}).join('');
+$('driverToggle').textContent=selected.size?`DRIVERS ${selected.size}`:'SELECT DRIVERS';
+}
+function saveSelection(){localStorage.setItem('f1-radio-drivers',JSON.stringify([...selected]));drawDriverChoices();$('radioStatus').textContent=selected.size?`${selected.size} driver(s) selected`:'No drivers selected';}
+$('driverChoices').addEventListener('click',e=>{const b=e.target.closest('[data-driver]');if(!b)return;const n=Number(b.dataset.driver);selected.has(n)?selected.delete(n):selected.add(n);saveSelection()});
+$('driverToggle').addEventListener('click',()=>$('driverPanel').classList.toggle('open'));
+$('closePanel').addEventListener('click',()=>$('driverPanel').classList.remove('open'));
+$('allDrivers').addEventListener('click',()=>{selected=new Set(driverList.map(d=>Number(d.driver_number)));saveSelection()});
+$('noDrivers').addEventListener('click',()=>{selected.clear();saveSelection()});
+$('radioToggle').addEventListener('click',async()=>{radioEnabled=!radioEnabled;$('radioToggle').classList.toggle('active',radioEnabled);$('radioToggle').textContent=radioEnabled?'RADIO ON':'RADIO OFF';if(radioEnabled){radioPrimed=true;if(!selected.size){$('radioStatus').textContent='Select at least one driver';$('driverPanel').classList.add('open');}else{$('radioStatus').textContent='Listening for selected drivers';await pollRadio();playNext()}}else{$('radioStatus').textContent='Team radio paused';radioQueue=[];$('radioAudio').pause();radioBusy=false}});
+function radioKey(x){return `${x.driver_number}|${x.date}|${x.recording_url}`}
+async function pollRadio(){if(!sessionKey||!radioPrimed)return;try{const records=await get(`team_radio?session_key=${sessionKey}`);const ordered=(records||[]).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+if(radioFirstPoll){ordered.forEach(x=>knownRadio.add(radioKey(x)));radioFirstPoll=false;return}
+for(const item of ordered){const key=radioKey(item);if(knownRadio.has(key))continue;knownRadio.add(key);if(radioEnabled&&selected.has(Number(item.driver_number))&&item.recording_url)radioQueue.push(item)}
+if(radioQueue.length){$('radioStatus').textContent=`${radioQueue.length} selected radio message(s) queued`;playNext()}else if(radioEnabled&&selected.size)$('radioStatus').textContent='Listening — waiting for selected drivers'}
+}catch(e){$('radioStatus').textContent='Radio feed unavailable';}}
+function playNext(){if(!radioEnabled||radioBusy||!radioQueue.length)return;const item=radioQueue.shift(),d=driverList.find(x=>Number(x.driver_number)===Number(item.driver_number)),name=d?.name_acronym||`CAR ${item.driver_number}`,audio=$('radioAudio');radioBusy=true;$('radioStatus').textContent=`PLAYING ${name} TEAM RADIO`;audio.src=item.recording_url;audio.play().then(()=>{}).catch(()=>{radioBusy=false;$('radioStatus').textContent='Tap RADIO ON to allow audio playback';});}
+$('radioAudio').addEventListener('ended',()=>{radioBusy=false;playNext()});
+$('radioAudio').addEventListener('error',()=>{radioBusy=false;$('radioStatus').textContent='Could not play this radio recording';playNext()});
 async function refresh(){if(busy)return;busy=true;try{
 if(firstLoad){const s=await get('sessions?session_key=latest');currentSession=s?.[0]||null;if(currentSession?.session_key)sessionKey=currentSession.session_key}
 const [positions,intervals,drivers,laps]=await Promise.all([get(`position?session_key=${sessionKey}`),get(`intervals?session_key=${sessionKey}`),get(`drivers?session_key=${sessionKey}`),firstLoad?get(`laps?session_key=${sessionKey}`):Promise.resolve([])]);
 render(positions,intervals,drivers,currentSession,laps);firstLoad=false;
 }catch(err){$('dot').classList.remove('live');$('state').textContent='NO LIVE';$('message').textContent=/401|403|429/.test(err.message)?'LIVE DATA ACCESS / LIMIT REACHED':err.message.toUpperCase();$('message').className='error';if(!lastGood)$('session').textContent='WAITING FOR SESSION DATA';
 }finally{busy=false}}
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});window.addEventListener('keydown',e=>{if(['Enter','ArrowDown','ArrowUp'].includes(e.key))refresh()});refresh();setInterval(refresh,POLL_MS);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});window.addEventListener('keydown',e=>{if(['Enter','ArrowDown','ArrowUp'].includes(e.key))refresh()});refresh();setInterval(refresh,POLL_MS);setInterval(pollRadio,RADIO_POLL_MS);
 })();
 </script>
 </body></html>
