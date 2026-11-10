@@ -44,7 +44,7 @@ footer{display:flex;justify-content:space-between;align-items:center;padding-top
 </main>
 <script>
 (()=>{'use strict';
-const API='https://api.openf1.org/v1',POLL_MS=10000,$=id=>document.getElementById(id);
+const API='https://f1-openf1-proxy.alfydunne.workers.dev/v1',POLL_MS=10000,$=id=>document.getElementById(id);
 let sessionKey='latest',lastGood=null,busy=false,firstLoad=true,currentSession=null;
 async function get(path){const r=await fetch(`${API}/${path}`,{cache:'no-store'});if(!r.ok)throw new Error(`OpenF1 returned ${r.status}`);return r.json()}
 function latestByDriver(records){const m=new Map();for(const x of records||[]){const old=m.get(x.driver_number);if(!old||String(x.date||'')>String(old.date||''))m.set(x.driver_number,x)}return m}
