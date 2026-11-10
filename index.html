@@ -83,11 +83,11 @@ $('driverToggle').textContent=selected.size?`DRIVERS ${selected.size}`:'SELECT D
 }
 function saveSelection(){localStorage.setItem('f1-radio-drivers',JSON.stringify([...selected]));drawDriverChoices();$('radioStatus').textContent=selected.size?`${selected.size} driver(s) selected`:'No drivers selected';}
 $('driverChoices').addEventListener('click',e=>{const b=e.target.closest('[data-driver]');if(!b)return;const n=Number(b.dataset.driver);selected.has(n)?selected.delete(n):selected.add(n);saveSelection()});
-$('driverToggle').addEventListener('click',()=>$('driverPanel').classList.toggle('open'));
-$('closePanel').addEventListener('click',()=>$('driverPanel').classList.remove('open'));
-$('allDrivers').addEventListener('click',()=>{selected=new Set(driverList.map(d=>Number(d.driver_number)));saveSelection()});
-$('noDrivers').addEventListener('click',()=>{selected.clear();saveSelection()});
-$('radioToggle').addEventListener('click',async()=>{radioEnabled=!radioEnabled;$('radioToggle').classList.toggle('active',radioEnabled);$('radioToggle').textContent=radioEnabled?'RADIO ON':'RADIO OFF';if(radioEnabled){radioPrimed=true;if(!selected.size){$('radioStatus').textContent='Select at least one driver';$('driverPanel').classList.add('open');}else{$('radioStatus').textContent='Listening for selected drivers';await pollRadio();playNext()}}else{$('radioStatus').textContent='Team radio paused';radioQueue=[];$('radioAudio').pause();radioBusy=false}});
+$('driverToggle').onclick=()=>{$('driverPanel').classList.toggle('open');$('radioStatus').textContent=$('driverPanel').classList.contains('open')?'Choose the drivers you want to hear':'Choose drivers for team radio'};
+$('closePanel').onclick=()=>$('driverPanel').classList.remove('open');
+$('allDrivers').onclick=()=>{selected=new Set(driverList.map(d=>Number(d.driver_number)));saveSelection()};
+$('noDrivers').onclick=()=>{selected.clear();saveSelection()};
+$('radioToggle').onclick=async()=>{radioEnabled=!radioEnabled;$('radioToggle').classList.toggle('active',radioEnabled);$('radioToggle').textContent=radioEnabled?'RADIO ON':'RADIO OFF';if(radioEnabled){radioPrimed=true;if(!selected.size){$('radioStatus').textContent='Select at least one driver';$('driverPanel').classList.add('open');}else{$('radioStatus').textContent='Listening for selected drivers';await pollRadio();playNext()}}else{$('radioStatus').textContent='Team radio paused';radioQueue=[];$('radioAudio').pause();radioBusy=false}};
 function radioKey(x){return `${x.driver_number}|${x.date}|${x.recording_url}`}
 async function pollRadio(){if(!sessionKey||!radioPrimed)return;try{const records=await get(`team_radio?session_key=${sessionKey}`);const ordered=(records||[]).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date)));
 if(radioFirstPoll){ordered.forEach(x=>knownRadio.add(radioKey(x)));radioFirstPoll=false;return}
