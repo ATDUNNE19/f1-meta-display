@@ -56,7 +56,7 @@ if(!list.length)throw new Error('No classification data is available for the lat
 $('rows').innerHTML=list.map(x=>{const d=x.driver||{},acronym=d.name_acronym||`#${x.number}`,colour=/^([0-9a-f]{6})$/i.test(d.team_colour||'')?`#${d.team_colour}`:'#888',t=x.timing||{};return `<div class="driver"><span class="pos">${x.position}</span><span class="identity"><i class="teambar" style="background:${colour}"></i><span class="code">${acronym}</span><span class="number">${x.number}</span></span><span class="gap ahead">${gapText(t.interval)}</span><span class="gap leader">${gapText(t.gap_to_leader)}</span></div>`}).join('');
 const name=session?`${session.country_name||''} ${session.session_name||''}`.trim():'LATEST SESSION';$('session').textContent=name||'LATEST SESSION';
 const nums=(lapRows||[]).map(x=>Number(x.lap_number)).filter(Number.isFinite),max=nums.length?Math.max(...nums):null;
-$('lap').textContent=max?`LAP ${max}`:(session?.session_type||'SESSION');$('updated').textContent=`UPDATED ${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'})`;
+$('lap').textContent=max?`LAP ${max}`:(session?.session_type||'SESSION');$('updated').textContent=`UPDATED ${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'})}`;
 $('dot').classList.add('live');$('state').textContent='DATA OK';$('message').textContent='GAPS: CAR AHEAD / RACE LEADER';$('message').className='';lastGood=Date.now();
 }
 async function refresh(){if(busy)return;busy=true;try{
