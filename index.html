@@ -50,7 +50,7 @@ audio{display:none}
 <body>
 <main class="screen" aria-label="Formula One live timing leaderboard">
 <header><div><div class="brand">F1 <span style="color:#ff3b30">LIVE TIMING</span></div><div class="session" id="session">CONNECTING TO TIMING DATA</div></div><div class="status"><span class="dot" id="dot"></span><span id="state">WAIT</span></div></header>
-<div class="radio-tools"><button id="radioToggle" type="button">RADIO OFF</button><button id="driverToggle" type="button">SELECT DRIVERS</button><span id="radioStatus">Choose drivers for team radio</span></div>
+<div class="radio-tools"><button id="testRace" type="button">TEST BRAZIL RACE</button><button id="radioToggle" type="button">RADIO OFF</button><button id="driverToggle" type="button">SELECT DRIVERS</button><span id="radioStatus">Choose drivers for team radio</span></div>
 <section class="panel" id="driverPanel"><div class="panelTitle">TAP EACH DRIVER YOU WANT TO HEAR</div><div id="driverChoices">Waiting for driver list…</div><div class="panelActions"><button id="allDrivers" type="button">SELECT ALL</button><button id="noDrivers" type="button">CLEAR</button><button id="closePanel" type="button">DONE</button></div></section>
 <div class="columns"><span>POS</span><span>DRIVER</span><span>TO AHEAD</span><span>TO LEAD</span></div>
 <section id="rows" aria-live="polite"></section><div id="message">Loading latest session…</div>
@@ -60,7 +60,7 @@ audio{display:none}
 <script>
 (()=>{'use strict';
 const API='https://f1-openf1-proxy.alfydunne.workers.dev/v1',POLL_MS=10000,RADIO_POLL_MS=15000,$=id=>document.getElementById(id);
-let sessionKey='latest',lastGood=null,busy=false,firstLoad=true,currentSession=null,driverList=[],selected=new Set(),radioEnabled=false,radioPrimed=false,knownRadio=new Set(),radioQueue=[],radioBusy=false,radioFirstPoll=true;
+let sessionKey='latest',lastGood=null,busy=false,firstLoad=true,testMode=false,currentSession=null,driverList=[],selected=new Set(),radioEnabled=false,radioPrimed=false,knownRadio=new Set(),radioQueue=[],radioBusy=false,radioFirstPoll=true;
 try{selected=new Set(JSON.parse(localStorage.getItem('f1-radio-drivers')||'[]').map(Number))}catch(e){}
 async function get(path){const r=await fetch(`${API}/${path}`,{cache:'no-store'});if(!r.ok)throw new Error(`OpenF1 returned ${r.status}`);return r.json()}
 function latestByDriver(records){const m=new Map();for(const x of records||[]){const old=m.get(x.driver_number);if(!old||String(x.date||'')>String(old.date||''))m.set(x.driver_number,x)}return m}
@@ -83,6 +83,7 @@ $('driverToggle').textContent=selected.size?`DRIVERS ${selected.size}`:'SELECT D
 }
 function saveSelection(){localStorage.setItem('f1-radio-drivers',JSON.stringify([...selected]));drawDriverChoices();$('radioStatus').textContent=selected.size?`${selected.size} driver(s) selected`:'No drivers selected';}
 $('driverChoices').addEventListener('click',e=>{const b=e.target.closest('[data-driver]');if(!b)return;const n=Number(b.dataset.driver);selected.has(n)?selected.delete(n):selected.add(n);saveSelection()});
+$('testRace').onclick=async()=>{try{$('message').textContent='Loading Brazil race test…';const ss=await get('sessions?year=2025&country_name=Brazil&session_name=Race');if(!ss||!ss.length)throw new Error('Brazil 2025 race session not found');currentSession=ss[0];sessionKey=currentSession.session_key;firstLoad=false;testMode=true;radioFirstPoll=true;knownRadio.clear();await refresh();}catch(e){$('message').textContent='TEST ERROR: '+e.message;$('message').className='error';}};
 $('driverToggle').onclick=()=>{$('driverPanel').classList.toggle('open');$('radioStatus').textContent=$('driverPanel').classList.contains('open')?'Choose the drivers you want to hear':'Choose drivers for team radio'};
 $('closePanel').onclick=()=>$('driverPanel').classList.remove('open');
 $('allDrivers').onclick=()=>{selected=new Set(driverList.map(d=>Number(d.driver_number)));saveSelection()};
@@ -98,7 +99,7 @@ function playNext(){if(!radioEnabled||radioBusy||!radioQueue.length)return;const
 $('radioAudio').addEventListener('ended',()=>{radioBusy=false;playNext()});
 $('radioAudio').addEventListener('error',()=>{radioBusy=false;$('radioStatus').textContent='Could not play this radio recording';playNext()});
 async function refresh(){if(busy)return;busy=true;try{
-if(firstLoad){const s=await get('sessions?session_key=latest');currentSession=s?.[0]||null;if(currentSession?.session_key)sessionKey=currentSession.session_key}
+if(firstLoad&&!testMode){const s=await get('sessions?session_key=latest');currentSession=s?.[0]||null;if(currentSession?.session_key)sessionKey=currentSession.session_key}
 const [positions,intervals,drivers,laps]=await Promise.all([get(`position?session_key=${sessionKey}`),get(`intervals?session_key=${sessionKey}`),get(`drivers?session_key=${sessionKey}`),firstLoad?get(`laps?session_key=${sessionKey}`):Promise.resolve([])]);
 render(positions,intervals,drivers,currentSession,laps);firstLoad=false;
 }catch(err){$('dot').classList.remove('live');$('state').textContent='NO LIVE';$('message').textContent=/401|403|429/.test(err.message)?'LIVE DATA ACCESS / LIMIT REACHED':err.message.toUpperCase();$('message').className='error';if(!lastGood)$('session').textContent='WAITING FOR SESSION DATA';
