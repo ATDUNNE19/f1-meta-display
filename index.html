@@ -10,7 +10,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;background:#000;color:var(--fg);font-family:Arial,Helvetica,sans-serif}
 body{overflow:hidden}
-.screen{width:min(100vw,100vh,600px);height:min(100vw,100vh,600px);margin:auto;padding:22px 24px 18px;display:flex;flex-direction:column;background:#000}
+.screen{position:relative;width:min(100vw,100vh,600px);height:min(100vw,100vh,600px);margin:auto;padding:22px 24px 18px;display:flex;flex-direction:column;background:#000}
 header{display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:13px;border-bottom:2px solid #f4f4f4}
 .brand{font-size:19px;font-weight:900;letter-spacing:1.7px;line-height:1}
 .session{margin-top:6px;font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.8px;text-transform:uppercase;max-width:355px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -22,7 +22,7 @@ header{display:flex;align-items:flex-start;justify-content:space-between;padding
 .radio-tools button.active{border-color:#50e080;color:#50e080}
 .radio-tools button:disabled{opacity:.45}
 #radioStatus{font-size:9px;color:var(--muted);align-self:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.panel{display:none;border:1px solid #555;border-radius:7px;padding:9px;margin:5px 0;background:#111;max-height:150px;overflow:auto}
+.panel{display:none;position:absolute;z-index:10;top:132px;left:15px;right:15px;border:1px solid #777;border-radius:7px;padding:9px;margin:5px 0;background:#111;max-height:190px;overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.8)}
 .panel.open{display:block}
 .panelTitle{font-size:10px;color:var(--muted);font-weight:800;margin-bottom:7px}
 #driverChoices{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
