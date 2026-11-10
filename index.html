@@ -18,7 +18,7 @@ header{display:flex;align-items:flex-start;justify-content:space-between;padding
 .dot{width:8px;height:8px;border-radius:50%;background:#8b8b8b;display:inline-block}
 .dot.live{background:#50e080;box-shadow:0 0 9px #50e080}
 .radio-tools{display:flex;gap:8px;padding:9px 0 2px}
-.radio-tools button,.panel button{background:#17191c;color:#fff;border:1px solid #555;border-radius:6px;padding:7px 10px;font-size:10px;font-weight:900;letter-spacing:.4px}
+.radio-tools button,.panel button{touch-action:manipulation;pointer-events:auto;position:relative;z-index:2;background:#17191c;color:#fff;border:1px solid #555;border-radius:6px;padding:7px 10px;font-size:10px;font-weight:900;letter-spacing:.4px}
 .radio-tools button.active{border-color:#50e080;color:#50e080}
 .radio-tools button:disabled{opacity:.45}
 #radioStatus{font-size:9px;color:var(--muted);align-self:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -103,6 +103,8 @@ const [positions,intervals,drivers,laps]=await Promise.all([get(`position?sessio
 render(positions,intervals,drivers,currentSession,laps);firstLoad=false;
 }catch(err){$('dot').classList.remove('live');$('state').textContent='NO LIVE';$('message').textContent=/401|403|429/.test(err.message)?'LIVE DATA ACCESS / LIMIT REACHED':err.message.toUpperCase();$('message').className='error';if(!lastGood)$('session').textContent='WAITING FOR SESSION DATA';
 }finally{busy=false}}
+// iPhone Safari touch fallback: convert a tap into the same button click action.
+document.addEventListener('touchend',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;e.preventDefault();b.click()},{passive:false});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});window.addEventListener('keydown',e=>{if(['Enter','ArrowDown','ArrowUp'].includes(e.key))refresh()});refresh();setInterval(refresh,POLL_MS);setInterval(pollRadio,RADIO_POLL_MS);
 })();
 </script>
