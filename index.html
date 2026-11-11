@@ -61,6 +61,56 @@ footer{display:flex;justify-content:space-between;align-items:center;padding-top
 .telemetry-head span:nth-child(1),.telemetry-head span:nth-child(2){text-align:left}
 @media(max-width:420px){.telemetry-head,.telemetry-row{grid-template-columns:20px 39px 1fr 1fr 1fr 1fr 1fr;gap:2px}.telemetry-row{font-size:8px}.telemetry-head{font-size:7px}}
 
+
+/* Visual tidy-up: consistent controls, spacing and clearer section hierarchy. */
+.screen{padding:20px 22px 16px;gap:0}
+header{align-items:center;padding-bottom:11px;border-bottom:2px solid #ff3b30}
+.brand{letter-spacing:1.4px}
+.session{font-size:10px;letter-spacing:.65px}
+.status{padding:5px 8px;border:1px solid #34373b;border-radius:20px;background:#101113}
+.radio-tools{gap:6px;padding:9px 0 6px;flex-wrap:wrap}
+.radio-tools button,.replay-tools button,.replay-tools select,.panel button{
+  border:1px solid #383b40;border-radius:6px;background:#151719;
+  padding:6px 8px;font-size:9px;letter-spacing:.35px
+}
+.radio-tools button.active{background:#102016}
+#radioStatus{flex:1;min-width:70px;padding-left:3px}
+.replay-tools{gap:6px;padding:4px 0}
+.replay-tools select{background:#101214}
+.replay-tools button{white-space:nowrap}
+.scrub-tools{gap:8px;padding:4px 2px 2px}
+.scrub-tools span{min-width:38px}
+#replayStatus{display:block;min-height:13px;padding:2px 0 4px;color:#858b93;font-size:8px;letter-spacing:.25px}
+.view-tabs{gap:6px;padding:7px 0 8px}
+.view-tabs button{border:1px solid #34373b;border-radius:6px;background:#111315;padding:8px 4px;color:#92979e;letter-spacing:.65px}
+.view-tabs button.active{background:#1b1d20;border-color:#ff3b30;color:#fff}
+.columns{padding:7px 3px 6px;border-bottom:1px solid #666}
+.driver{padding:0 3px}
+.pos{font-size:16px}
+.identity{gap:7px}
+.teambar{height:23px;width:3px}
+.code{font-size:17px}
+.gap{font-size:11px}
+footer{padding:7px 2px 0;border-top:1px solid #292c30;font-size:9px}
+#message{padding:4px 0;min-height:15px;color:#aeb3ba}
+.panel{top:100px;border-color:#45494f;border-radius:8px;background:#101214;padding:9px}
+.panelTitle{letter-spacing:.45px;padding:2px 1px 5px}
+.panel button{padding:7px 5px}
+.telemetry-head{padding:6px 3px;border-bottom-color:#666}
+.telemetry-row{padding:0 3px;min-height:22px}
+.track-note{padding:6px 2px}
+@media(max-width:420px){
+  .screen{padding:14px 14px 10px}
+  .radio-tools{gap:5px;padding:7px 0 5px}
+  .radio-tools button{padding:6px 7px}
+  .replay-tools{gap:4px}
+  .replay-tools button,.replay-tools select{padding:6px 5px;font-size:8px}
+  .view-tabs{padding:6px 0}
+  .columns,.driver{column-gap:5px}
+  .code{font-size:15px}
+  .gap{font-size:10px}
+}
+
 .error{color:#ff9b91}
 audio{display:none}
 @media(max-width:420px){.screen{padding:16px 15px 12px}.columns,.driver{grid-template-columns:25px minmax(0,1fr) 69px 69px;column-gap:5px}.code{font-size:16px}.gap{font-size:11px}.brand{font-size:17px}#driverChoices{grid-template-columns:repeat(3,1fr)}}
