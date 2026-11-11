@@ -89,6 +89,17 @@ let locationRows=[],carDataRows=[],activeView='leaderboard';
 try{selected=new Set(JSON.parse(localStorage.getItem('f1-radio-drivers')||'[]').map(Number))}catch(e){}
 async function get(path){const r=await fetch(`${API}/${path}`,{cache:'no-store'});if(!r.ok)throw new Error(`OpenF1 returned ${r.status}`);return r.json()}
 function latestByDriver(records){const m=new Map();for(const x of records||[]){const old=m.get(x.driver_number);if(!old||String(x.date||'')>String(old.date||''))m.set(x.driver_number,x)}return m}
+function nearestByDriver(records,stamp,validLocation=false){
+const target=Date.parse(stamp),m=new Map();
+for(const x of records||[]){
+const n=Number(x.driver_number),time=Date.parse(x.date);
+if(!Number.isFinite(n)||!Number.isFinite(time))continue;
+if(validLocation&&(!Number(x.x)||!Number(x.y)))continue;
+const old=m.get(n),distance=Math.abs(time-target);
+if(!old||distance<old.distance)m.set(n,{record:x,distance});
+}
+return new Map([...m].map(([n,v])=>[n,v.record]));
+}
 function gapText(v){if(v===null||v===undefined)return '—';if(typeof v==='string')return v.toUpperCase().includes('LAP')?v.replace(' ',''):v;return `+${Number(v).toFixed(3)}`}
 function render(positionRows,intervalRows,drivers,session,lapRows){
 const positions=latestByDriver(positionRows),intervals=latestByDriver(intervalRows),driverMap=new Map((drivers||[]).map(d=>[d.driver_number,d]));
@@ -148,19 +159,19 @@ if(lastReplayMotionStamp===stamp)return;
 lastReplayMotionStamp=stamp;
 const requestId=++replayMotionRequest,sessionAtRequest=sessionKey;
 try{
-const centre=Date.parse(stamp),from=new Date(centre-1500).toISOString(),to=new Date(centre+1500).toISOString();
+const centre=Date.parse(stamp),from=new Date(centre-4000).toISOString(),to=new Date(centre+4000).toISOString();
 const base=`session_key=${sessionAtRequest}&date>${encodeURIComponent(from)}&date<${encodeURIComponent(to)}`;
 const [loc,cars]=await Promise.all([get(`location?${base}`),get(`car_data?${base}`)]);
 if(!testMode||sessionKey!==sessionAtRequest||requestId!==replayMotionRequest)return;
 locationRows=loc||[];carDataRows=cars||[];
-renderTrack(positions,driverList);renderTelemetry(positions,driverList,carDataRows);
+renderTrack(positions,driverList,stamp);renderTelemetry(positions,driverList,carDataRows,stamp);
 }catch(e){
 if(requestId===replayMotionRequest)$('trackNote').textContent='Historical car location unavailable for this replay time';
 }
 }
 function teamColour(d){return /^([0-9a-f]{6})$/i.test(d?.team_colour||'')?`#${d.team_colour}`:'#aaa'}
-function renderTrack(positionRows,drivers){
-const svg=$('trackCanvas'),latest=latestByDriver(locationRows),driverMap=new Map((drivers||[]).map(d=>[Number(d.driver_number),d]));
+function renderTrack(positionRows,drivers,stamp){
+const svg=$('trackCanvas'),latest=stamp?nearestByDriver(locationRows,stamp,true):latestByDriver(locationRows),driverMap=new Map((drivers||[]).map(d=>[Number(d.driver_number),d]));
 const points=[...latest.entries()].map(([n,p])=>({n:Number(n),x:Number(p.x),y:Number(p.y),d:driverMap.get(Number(n))})).filter(p=>Number.isFinite(p.x)&&Number.isFinite(p.y));
 if(!points.length){svg.innerHTML='<text x="250" y="180" fill="#aaa" text-anchor="middle" font-size="16">TRACK DATA NOT AVAILABLE</text>';$('trackNote').textContent='Location data appears when the cars are on track';return}
 const minX=Math.min(...points.map(p=>p.x)),maxX=Math.max(...points.map(p=>p.x)),minY=Math.min(...points.map(p=>p.y)),maxY=Math.max(...points.map(p=>p.y)),spanX=maxX-minX||1,spanY=maxY-minY||1,scale=Math.min(420/spanX,285/spanY),ox=(500-spanX*scale)/2,oy=(360-spanY*scale)/2;
@@ -169,8 +180,8 @@ const marks=points.map(p=>{const x=ox+(p.x-minX)*scale,y=360-(oy+(p.y-minY)*scal
 svg.innerHTML=`<rect width="500" height="360" fill="transparent"/><text x="250" y="20" fill="#888" text-anchor="middle" font-size="10" letter-spacing="2">LIVE CAR POSITIONS · ${points.length} CARS</text>${marks}`;
 $('trackNote').textContent='Each marker shows the car’s current race position · team colours identify constructors';
 }
-function renderTelemetry(positionRows,drivers,records){
-const driverMap=new Map((drivers||[]).map(d=>[Number(d.driver_number),d])),positions=latestByDriver(positionRows),data=latestByDriver(records);
+function renderTelemetry(positionRows,drivers,records,stamp){
+const driverMap=new Map((drivers||[]).map(d=>[Number(d.driver_number),d])),positions=latestByDriver(positionRows),data=stamp?nearestByDriver(records,stamp):latestByDriver(records);
 const list=[...driverMap.entries()].map(([n,d])=>({n,d,p:positions.get(n),t:data.get(n)})).sort((a,b)=>(Number(a.p?.position)||99)-(Number(b.p?.position)||99));
 $('telemetryRows').innerHTML=list.map(x=>{const t=x.t||{},p=Number(x.p?.position)||'–';return `<div class="telemetry-row"><span class="tpos">${p}</span><span class="tdriver"><i class="tbar" style="background:${teamColour(x.d)}"></i>${x.d.name_acronym||x.n}</span><span>${Number.isFinite(Number(t.speed))?Math.round(Number(t.speed)):'–'}</span><span>${t.n_gear??'–'}</span><span>${t.rpm?Math.round(t.rpm):'–'}</span><span>${t.throttle??'–'}</span><span>${t.brake===undefined?'–':(Number(t.brake)>0?'ON':'OFF')}</span></div>`}).join('');
 }
