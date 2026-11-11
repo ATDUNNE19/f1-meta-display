@@ -100,6 +100,15 @@ if(!old||distance<old.distance)m.set(n,{record:x,distance});
 }
 return new Map([...m].map(([n,v])=>[n,v.record]));
 }
+function interpolatedLocations(records,stamp){
+const target=Date.parse(stamp),groups=new Map();
+for(const row of records||[]){const n=Number(row.driver_number),time=Date.parse(row.date),x=Number(row.x),y=Number(row.y);if(!Number.isFinite(n)||!Number.isFinite(time)||!Number.isFinite(x)||!Number.isFinite(y)||x===0||y===0)continue;if(!groups.has(n))groups.set(n,[]);groups.get(n).push(row)}
+const result=new Map();
+for(const [n,rows] of groups){rows.sort((a,b)=>Date.parse(a.date)-Date.parse(b.date));let before=null,after=null;for(const row of rows){const t=Date.parse(row.date);if(t<=target)before=row;if(t>=target){after=row;break}}
+if(before&&after){const a=Date.parse(before.date),b=Date.parse(after.date),f=b===a?0:Math.max(0,Math.min(1,(target-a)/(b-a)));result.set(n,{...before,x:Number(before.x)+(Number(after.x)-Number(before.x))*f,y:Number(before.y)+(Number(after.y)-Number(before.y))*f,date:stamp})}
+else if(before||after)result.set(n,before||after)}
+return result;
+}
 function gapText(v){if(v===null||v===undefined)return '—';if(typeof v==='string')return v.toUpperCase().includes('LAP')?v.replace(' ',''):v;return `+${Number(v).toFixed(3)}`}
 function render(positionRows,intervalRows,drivers,session,lapRows){
 const positions=latestByDriver(positionRows),intervals=latestByDriver(intervalRows),driverMap=new Map((drivers||[]).map(d=>[d.driver_number,d]));
@@ -174,7 +183,7 @@ if(requestId===replayMotionRequest)$('trackNote').textContent='Historical car lo
 }
 function teamColour(d){return /^([0-9a-f]{6})$/i.test(d?.team_colour||'')?`#${d.team_colour}`:'#aaa'}
 function renderTrack(positionRows,drivers,stamp){
-const svg=$('trackCanvas'),latest=stamp?nearestByDriver(locationRows,stamp,true):latestByDriver(locationRows),driverMap=new Map((drivers||[]).map(d=>[Number(d.driver_number),d]));
+const svg=$('trackCanvas'),latest=stamp?interpolatedLocations(locationRows,stamp):latestByDriver(locationRows),driverMap=new Map((drivers||[]).map(d=>[Number(d.driver_number),d]));
 const points=[...latest.entries()].map(([n,p])=>({n:Number(n),x:Number(p.x),y:Number(p.y),d:driverMap.get(Number(n))})).filter(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x!==0&&p.y!==0);
 const outline=trackOutlineRows.filter(p=>Number.isFinite(Number(p.x))&&Number.isFinite(Number(p.y))&&Number(p.x)!==0&&Number(p.y)!==0);
 if(!points.length){svg.innerHTML='<text x="250" y="180" fill="#aaa" text-anchor="middle" font-size="16">TRACK DATA NOT AVAILABLE</text>';$('trackNote').textContent='Location data appears when the cars are on track';return}
