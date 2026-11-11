@@ -273,6 +273,15 @@ footer{flex:none;padding:4px 4px 0;font-size:8px}
  .view-tabs{padding:2px 0 3px}
 }
 
+
+/* Restore strong, readable team identity in the timing table. */
+.identity .teambar{
+  display:block;flex:0 0 5px;width:5px;height:72%;min-height:22px;
+  align-self:center;border-radius:3px;box-shadow:0 0 5px currentColor
+}
+.identity .code{color:var(--team-colour,#fff)}
+.driver{border-bottom-color:#42464d}
+
 .error{color:#ff9b91}
 audio{display:none}
 @media(max-width:420px){.screen{padding:16px 15px 12px}.columns,.driver{grid-template-columns:25px minmax(0,1fr) 69px 69px;column-gap:5px}.code{font-size:16px}.gap{font-size:11px}.brand{font-size:17px}#driverChoices{grid-template-columns:repeat(3,1fr)}}
@@ -327,7 +336,7 @@ const positions=latestByDriver(positionRows),intervals=latestByDriver(intervalRo
 driverList=(drivers||[]).slice().sort((a,b)=>(a.name_acronym||'').localeCompare(b.name_acronym||''));drawDriverChoices();
 const list=[...positions.entries()].map(([number,p])=>({number,position:Number(p.position),driver:driverMap.get(number),timing:intervals.get(number)})).filter(x=>Number.isFinite(x.position)&&x.position>0).sort((a,b)=>a.position-b.position).slice(0,10);
 if(!list.length)throw new Error('No classification data is available for the latest session yet.');
-$('rows').innerHTML=list.map(x=>{const d=x.driver||{},acronym=d.name_acronym||`#${x.number}`,colour=/^([0-9a-f]{6})$/i.test(d.team_colour||'')?`#${d.team_colour}`:'#888',t=x.timing||{};return `<div class="driver"><span class="pos">${x.position}</span><span class="identity"><i class="teambar" style="background:${colour}"></i><span class="code">${acronym}</span><span class="number">${x.number}</span></span><span class="gap ahead">${gapText(t.interval)}</span><span class="gap leader">${gapText(t.gap_to_leader)}</span></div>`}).join('');
+$('rows').innerHTML=list.map(x=>{const d=x.driver||{},acronym=d.name_acronym||`#${x.number}`,colour=/^([0-9a-f]{6})$/i.test(d.team_colour||'')?`#${d.team_colour}`:'#888',t=x.timing||{};return `<div class="driver"><span class="pos">${x.position}</span><span class="identity" style="--team-colour:${colour}"><i class="teambar" style="background:${colour};color:${colour}"></i><span class="code">${acronym}</span><span class="number">${x.number}</span></span><span class="gap ahead">${gapText(t.interval)}</span><span class="gap leader">${gapText(t.gap_to_leader)}</span></div>`}).join('');
 renderTrack(positions,drivers);renderTelemetry(positions,drivers,carDataRows);
 const name=session?`${session.country_name||''} ${session.session_name||''}`.trim():'LATEST SESSION';$('session').textContent=name||'LATEST SESSION';
 const nums=(lapRows||[]).map(x=>Number(x.lap_number)).filter(Number.isFinite),max=nums.length?Math.max(...nums):null;
