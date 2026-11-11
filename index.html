@@ -133,6 +133,15 @@ if(radioQueue.length){$('radioStatus').textContent=`${radioQueue.length} selecte
 function playNext(){if(!radioEnabled||radioBusy||!radioQueue.length)return;const item=radioQueue.shift(),d=driverList.find(x=>Number(x.driver_number)===Number(item.driver_number)),name=d?.name_acronym||`CAR ${item.driver_number}`,audio=$('radioAudio');radioBusy=true;$('radioStatus').textContent=`PLAYING ${name} TEAM RADIO`;audio.src=item.recording_url;audio.play().then(()=>{}).catch(()=>{radioBusy=false;$('radioStatus').textContent='Tap RADIO ON to allow audio playback';});}
 $('radioAudio').addEventListener('ended',()=>{radioBusy=false;playNext()});
 $('radioAudio').addEventListener('error',()=>{radioBusy=false;$('radioStatus').textContent='Could not play this radio recording';playNext()});
+async function loadMotionData(key,drivers,positions){
+try{
+const cutoff=encodeURIComponent(new Date(Date.now()-30000).toISOString());
+const [locations,cars]=await Promise.all([get(`location?session_key=${key}&date>${cutoff}`),get(`car_data?session_key=${key}&date>${cutoff}`)]);
+if(key!==sessionKey)return;
+locationRows=locations||[];carDataRows=cars||[];
+renderTrack(positions,drivers);renderTelemetry(positions,drivers,carDataRows);
+}catch(e){/* Keep timing and controls working if motion data is unavailable. */}
+}
 function teamColour(d){return /^([0-9a-f]{6})$/i.test(d?.team_colour||'')?`#${d.team_colour}`:'#aaa'}
 function renderTrack(positionRows,drivers){
 const svg=$('trackCanvas'),latest=latestByDriver(locationRows),driverMap=new Map((drivers||[]).map(d=>[Number(d.driver_number),d]));
@@ -153,10 +162,9 @@ document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',(
 
 async function refresh(){if(busy||replayPlaying)return;busy=true;try{
 if(firstLoad&&!testMode){const s=await get('sessions?session_key=latest');currentSession=s?.[0]||null;if(currentSession?.session_key)sessionKey=currentSession.session_key}
-const cutoff=encodeURIComponent(new Date(Date.now()-30000).toISOString());
-const [positions,intervals,drivers,laps,locations,cars]=await Promise.all([get(`position?session_key=${sessionKey}`),get(`intervals?session_key=${sessionKey}`),get(`drivers?session_key=${sessionKey}`),firstLoad?get(`laps?session_key=${sessionKey}`):Promise.resolve([]),get(`location?session_key=${sessionKey}&date>${cutoff}`).catch(()=>[]),get(`car_data?session_key=${sessionKey}&date>${cutoff}`).catch(()=>[])]);
-locationRows=locations||[];carDataRows=cars||[];
+const [positions,intervals,drivers,laps]=await Promise.all([get(`position?session_key=${sessionKey}`),get(`intervals?session_key=${sessionKey}`),get(`drivers?session_key=${sessionKey}`),firstLoad?get(`laps?session_key=${sessionKey}`):Promise.resolve([])]);
 render(positions,intervals,drivers,currentSession,laps);firstLoad=false;
+loadMotionData(sessionKey,drivers,positions);
 }catch(err){$('dot').classList.remove('live');$('state').textContent='NO LIVE';$('message').textContent=/401|403|429/.test(err.message)?'LIVE DATA ACCESS / LIMIT REACHED':err.message.toUpperCase();$('message').className='error';if(!lastGood)$('session').textContent='WAITING FOR SESSION DATA';
 }finally{busy=false}}
 // iPhone Safari touch fallback: convert a tap into the same button click action.
