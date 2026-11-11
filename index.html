@@ -83,9 +83,9 @@ audio{display:none}
 </main>
 <script>
 (()=>{'use strict';
-const API='https://f1-openf1-proxy.alfydunne.workers.dev/v1',POLL_MS=2000,RADIO_POLL_MS=15000,$=id=>document.getElementById(id);
+const API='https://f1-openf1-proxy.alfydunne.workers.dev/v1',POLL_MS=5000,MOTION_POLL_MS=3000,RADIO_POLL_MS=15000,$=id=>document.getElementById(id);
 let sessionKey='latest',lastGood=null,busy=false,firstLoad=true,testMode=false,currentSession=null,driverList=[],selected=new Set(),radioEnabled=false,radioPrimed=false,knownRadio=new Set(),radioQueue=[],radioBusy=false,radioFirstPoll=true,replayPositions=[],replayIntervals=[],replayLaps=[],replayTimes=[],replayIndex=0,replayTimer=null,replayPlaying=false,historicalRadio=[],playedHistoricalRadio=new Set();
-let motionBusy=false,locationRows=[],carDataRows=[],trackOutlineRows=[],activeView='leaderboard';
+let motionBusy=false,lastMotionPollAt=0,lastPositionRows=[],lastIntervals=[],lastLapRows=[],locationRows=[],carDataRows=[],trackOutlineRows=[],activeView='leaderboard';
 try{selected=new Set(JSON.parse(localStorage.getItem('f1-radio-drivers')||'[]').map(Number))}catch(e){}
 async function get(path){const r=await fetch(`${API}/${path}`,{cache:'no-store'});if(!r.ok)throw new Error(`OpenF1 returned ${r.status}`);return r.json()}
 function latestByDriver(records){const m=new Map();for(const x of records||[]){const old=m.get(x.driver_number);if(!old||String(x.date||'')>String(old.date||''))m.set(x.driver_number,x)}return m}
@@ -157,14 +157,22 @@ function topTenNumbers(positionRows){
 return new Set([...latestByDriver(positionRows).entries()].map(([n,p])=>({n:Number(n),position:Number(p.position)})).filter(x=>Number.isFinite(x.position)&&x.position>0).sort((a,b)=>a.position-b.position).slice(0,10).map(x=>x.n));
 }
 async function loadMotionData(key,drivers,positions){
-if(testMode||motionBusy)return; // Historical replay motion is loaded by loadReplayMotion; never overwrite it with a live-time query.
+if(testMode||motionBusy||activeView==='leaderboard')return; // Fetch motion only while its tab is visible.
 motionBusy=true;
 try{
-const cutoff=encodeURIComponent(new Date(Date.now()-30000).toISOString());
-const [locations,cars]=await Promise.all([get(`location?session_key=${key}&date>${cutoff}`),get(`car_data?session_key=${key}&date>${cutoff}`)]);
-if(key!==sessionKey)return;
-const top10=topTenNumbers(positions);locationRows=(locations||[]).filter(x=>top10.has(Number(x.driver_number)));carDataRows=(cars||[]).filter(x=>top10.has(Number(x.driver_number)));
-renderTrack(positions,drivers);renderTelemetry(positions,drivers,carDataRows);
+const cutoff=encodeURIComponent(new Date(Date.now()-15000).toISOString());
+const top10=topTenNumbers(positions);
+if(activeView==='track'){
+const locations=await get(`location?session_key=${key}&date>${cutoff}`);
+if(key!==sessionKey||activeView!=='track')return;
+locationRows=(locations||[]).filter(x=>top10.has(Number(x.driver_number)));
+renderTrack(positions,drivers);
+}else if(activeView==='telemetry'){
+const cars=await get(`car_data?session_key=${key}&date>${cutoff}`);
+if(key!==sessionKey||activeView!=='telemetry')return;
+carDataRows=(cars||[]).filter(x=>top10.has(Number(x.driver_number)));
+renderTelemetry(positions,drivers,carDataRows);
+}
 }catch(e){/* Keep timing and controls working if motion data is unavailable. */}
 finally{motionBusy=false}
 }
@@ -216,13 +224,14 @@ document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',(
 async function refresh(){if(busy||replayPlaying)return;busy=true;try{
 if(firstLoad&&!testMode){const s=await get('sessions?session_key=latest');currentSession=s?.[0]||null;if(currentSession?.session_key)sessionKey=currentSession.session_key}
 const [positions,intervals,drivers,laps]=await Promise.all([get(`position?session_key=${sessionKey}`),get(`intervals?session_key=${sessionKey}`),get(`drivers?session_key=${sessionKey}`),firstLoad?get(`laps?session_key=${sessionKey}`):Promise.resolve([])]);
+lastPositionRows=positions;lastIntervals=intervals;if(firstLoad)lastLapRows=laps;
 render(positions,intervals,drivers,currentSession,laps);firstLoad=false;
-loadMotionData(sessionKey,drivers,positions);
+if(activeView!=='leaderboard')loadMotionData(sessionKey,drivers,positions);
 }catch(err){$('dot').classList.remove('live');$('state').textContent='NO LIVE';$('message').textContent=/401|403|429/.test(err.message)?'LIVE DATA ACCESS / LIMIT REACHED':err.message.toUpperCase();$('message').className='error';if(!lastGood)$('session').textContent='WAITING FOR SESSION DATA';
 }finally{busy=false}}
 // iPhone Safari touch fallback: convert a tap into the same button click action.
 document.addEventListener('touchend',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;e.preventDefault();b.click()},{passive:false});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});window.addEventListener('keydown',e=>{if(['Enter','ArrowDown','ArrowUp'].includes(e.key))refresh()});refresh();loadSeasonRaceList();setInterval(refresh,POLL_MS);setInterval(pollRadio,RADIO_POLL_MS);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){refresh();if(activeView!=='leaderboard'&&lastPositionRows.length)loadMotionData(sessionKey,driverList,lastPositionRows)}});window.addEventListener('keydown',e=>{if(['Enter','ArrowDown','ArrowUp'].includes(e.key))refresh()});refresh();loadSeasonRaceList();setInterval(()=>{if(!document.hidden)refresh()},POLL_MS);setInterval(()=>{if(!document.hidden&&activeView!=='leaderboard'&&lastPositionRows.length)loadMotionData(sessionKey,driverList,lastPositionRows)},MOTION_POLL_MS);setInterval(pollRadio,RADIO_POLL_MS);
 })();
 </script>
 </body></html>
