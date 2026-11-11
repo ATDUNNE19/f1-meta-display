@@ -17,8 +17,7 @@ header{display:flex;align-items:flex-start;justify-content:space-between;padding
 .status{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.7px}
 .dot{width:8px;height:8px;border-radius:50%;background:#8b8b8b;display:inline-block}
 .dot.live{background:#50e080;box-shadow:0 0 9px #50e080}
-.radio-tools{display:flex;gap:5px;padding:4px 0 1px;align-items:center}.replay-tools{display:flex;gap:5px;align-items:center;padding:2px 0 0}.replay-tools button,.replay-tools select{background:#17191c;color:#fff;border:1px solid #555;border-radius:4px;padding:4px 5px;font-size:9px;font-weight:900;touch-action:manipulation;min-width:0}.replay-tools select{flex:1;width:90px}.scrub-tools{display:flex;align-items:center;gap:5px;padding:1px 0}.scrub-tools input{flex:1;min-width:0;height:12px;accent-color:#ff3b30;touch-action:pan-x}.scrub-tools span{font-size:8px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:34px;text-align:right}
-.radio-tools button,.panel button{touch-action:manipulation;pointer-events:auto;position:relative;z-index:2;background:#17191c;color:#fff;border:1px solid #555;border-radius:4px;padding:4px 6px;font-size:9px;font-weight:900;letter-spacing:.2px}
+.radio-tools{display:flex;gap:5px;padding:4px 0 1px;align-items:center}.radio-tools button,.panel button{touch-action:manipulation;pointer-events:auto;position:relative;z-index:2;background:#17191c;color:#fff;border:1px solid #555;border-radius:4px;padding:4px 6px;font-size:9px;font-weight:900;letter-spacing:.2px}
 .radio-tools button.active{border-color:#50e080;color:#50e080}
 .radio-tools button:disabled{opacity:.45}
 #radioStatus{font-size:8px;color:var(--muted);align-self:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -75,12 +74,7 @@ header{align-items:center;padding-bottom:11px;border-bottom:2px solid #ff3b30}
 }
 .radio-tools button.active{background:#102016}
 #radioStatus{flex:1;min-width:70px;padding-left:3px}
-.replay-tools{gap:6px;padding:4px 0}
-.replay-tools select{background:#101214}
-.replay-tools button{white-space:nowrap}
-.scrub-tools{gap:8px;padding:4px 2px 2px}
-.scrub-tools span{min-width:38px}
-#replayStatus{display:block;min-height:13px;padding:2px 0 4px;color:#858b93;font-size:8px;letter-spacing:.25px}
+
 .view-tabs{gap:6px;padding:7px 0 8px}
 .view-tabs button{border:1px solid #34373b;border-radius:6px;background:#111315;padding:8px 4px;color:#92979e;letter-spacing:.65px}
 .view-tabs button.active{background:#1b1d20;border-color:#ff3b30;color:#fff}
@@ -103,8 +97,6 @@ footer{padding:7px 2px 0;border-top:1px solid #292c30;font-size:9px}
   .screen{padding:14px 14px 10px}
   .radio-tools{gap:5px;padding:7px 0 5px}
   .radio-tools button{padding:6px 7px}
-  .replay-tools{gap:4px}
-  .replay-tools button,.replay-tools select{padding:6px 5px;font-size:8px}
   .view-tabs{padding:6px 0}
   .columns,.driver{column-gap:5px}
   .code{font-size:15px}
@@ -126,13 +118,7 @@ header{flex:none;align-items:center;padding:0 0 8px;border-bottom:2px solid #ff3
 .radio-tools{flex:none;flex-wrap:nowrap;gap:5px;padding:7px 0 3px}
 .radio-tools button{padding:5px 7px;font-size:8px;border-radius:5px;white-space:nowrap}
 #radioStatus{font-size:7px;min-width:0}
-.replay-tools{flex:none;gap:5px;padding:3px 0}
-.replay-tools button,.replay-tools select{padding:5px 6px;font-size:8px;border-radius:5px}
-.replay-tools select{width:80px;flex:1}
-.scrub-tools{flex:none;gap:6px;padding:1px 0}
-.scrub-tools input{height:10px}
-.scrub-tools span{font-size:7px}
-#replayStatus{flex:none;min-height:10px;padding:1px 0 2px;font-size:7px}
+
 .view-tabs{flex:none;gap:5px;padding:5px 0}
 .view-tabs button{padding:6px 3px;font-size:9px;border-radius:5px}
 .view{flex:1;min-height:0}
@@ -156,15 +142,12 @@ footer{flex:none;padding:5px 2px 0;font-size:8px}
  .screen{padding:12px 12px 9px}
  .radio-tools{gap:3px}
  .radio-tools button{padding:5px 5px;font-size:7px}
- .replay-tools{gap:3px}
- .replay-tools button,.replay-tools select{font-size:7px;padding:5px 4px}
  .columns,.driver{grid-template-columns:24px minmax(0,1fr) 66px 66px;column-gap:5px}
  .pos{font-size:18px}.code{font-size:17px}.gap{font-size:12px}
 }
 @media(max-height:560px){
  .screen{height:100dvh;padding-top:8px;padding-bottom:6px}
  .radio-tools{padding:3px 0 1px}
- .replay-tools{padding:1px 0}
  .view-tabs{padding:2px 0}
  .driver{min-height:22px}
 }
@@ -184,13 +167,7 @@ header{padding:0 0 4px;border-bottom:1px solid #34373b}
 .radio-tools{padding:3px 0 1px;gap:4px;min-height:0}
 .radio-tools button{font-size:7px;padding:3px 5px;border-radius:3px}
 #radioStatus{font-size:6px}
-.replay-tools{padding:1px 0;gap:4px}
-.replay-tools button,.replay-tools select{font-size:7px;padding:3px 5px;border-radius:3px}
-.replay-tools select{max-width:110px}
-.scrub-tools{padding:0;gap:5px}
-.scrub-tools input{height:7px}
-.scrub-tools span{font-size:6px;min-width:30px}
-#replayStatus{font-size:6px;min-height:8px;padding:0}
+
 .view-tabs{padding:2px 0 4px;gap:4px}
 .view-tabs button{font-size:7px;padding:3px;border-radius:3px}
 .leaderboard-view,.view{min-height:0}
@@ -232,13 +209,7 @@ header{flex:none;padding:0 0 6px;border-bottom:1px solid #34373b}
 .radio-tools{flex:none;padding:4px 0 2px;gap:4px;flex-wrap:nowrap}
 .radio-tools button{font-size:7px;padding:4px 6px;border-radius:4px}
 #radioStatus{font-size:7px;min-width:0}
-.replay-tools{flex:none;padding:2px 0;gap:4px}
-.replay-tools button,.replay-tools select{font-size:7px;padding:4px 5px;border-radius:4px}
-.replay-tools select{max-width:125px}
-.scrub-tools{flex:none;padding:1px 0;gap:5px}
-.scrub-tools input{height:8px}
-.scrub-tools span{font-size:7px;min-width:32px}
-#replayStatus{flex:none;min-height:10px;padding:1px 0;font-size:7px}
+
 .view-tabs{flex:none;padding:4px 0 5px;gap:5px}
 .view-tabs button{font-size:8px;padding:5px 3px;border-radius:4px}
 .view{flex:1;min-height:0}
@@ -260,8 +231,6 @@ footer{flex:none;padding:4px 4px 0;font-size:8px}
  .screen{padding:8px 10px 6px}
  .radio-tools{gap:3px}
  .radio-tools button{padding:4px 4px;font-size:6px}
- .replay-tools{gap:3px}
- .replay-tools button,.replay-tools select{padding:4px 3px;font-size:6px}
  .columns,.driver{grid-template-columns:7% minmax(0,1fr) 19% 19%;column-gap:4px}
  .code{font-size:clamp(17px,4vh,23px)}
  .gap{font-size:clamp(12px,2.6vh,15px)}
@@ -269,7 +238,6 @@ footer{flex:none;padding:4px 4px 0;font-size:8px}
 @media(max-height:560px){
  .screen{height:min(100vw,100vh,600px);padding-top:5px;padding-bottom:4px}
  .radio-tools{padding:2px 0 1px}
- .replay-tools{padding:1px 0}
  .view-tabs{padding:2px 0 3px}
 }
 
@@ -291,7 +259,7 @@ audio{display:none}
 <main class="screen" aria-label="Formula One live timing leaderboard">
 <header><div><div class="brand">F1 <span style="color:#ff3b30">LIVE TIMING</span></div><div class="session" id="session">CONNECTING TO TIMING DATA</div></div><div class="status"><span class="dot" id="dot"></span><span id="state">WAIT</span></div></header>
 <div class="radio-tools"><button id="liveFeedBtn" type="button">LIVE FEED</button><button id="radioToggle" type="button">RADIO OFF</button><button id="driverToggle" type="button">SELECT DRIVERS</button><span id="radioStatus">Choose drivers for team radio</span></div>
-<div class="replay-tools"><select id="raceSelect" aria-label="Choose a race"><option value="">Loading 2026 races…</option></select><button id="loadSeasonRace" type="button">LOAD RACE</button><button id="replayBtn" type="button">REPLAY RACE</button><select id="speedSelect" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="5">5×</option><option value="10">10×</option></select></div><div class="scrub-tools"><input id="replayScrubber" type="range" min="0" max="0" value="0" step="1" aria-label="Scrub through race replay"><span id="scrubTime">00:00</span></div><span id="replayStatus">Choose a 2026 race</span><section class="panel" id="driverPanel"><div class="panelTitle">TAP EACH DRIVER YOU WANT TO HEAR</div><div id="driverChoices">Waiting for driver list…</div><div class="panelActions"><button id="allDrivers" type="button">SELECT ALL</button><button id="noDrivers" type="button">CLEAR</button><button id="closePanel" type="button">DONE</button></div></section>
+<section class="panel" id="driverPanel"><div class="panelTitle">TAP EACH DRIVER YOU WANT TO HEAR</div><div id="driverChoices">Waiting for driver list…</div><div class="panelActions"><button id="allDrivers" type="button">SELECT ALL</button><button id="noDrivers" type="button">CLEAR</button><button id="closePanel" type="button">DONE</button></div></section>
 <div class="view-tabs" role="tablist" aria-label="Timing views">
 <button type="button" class="active" data-view="leaderboard">LEADERBOARD</button><button type="button" data-view="track">TRACK</button><button type="button" data-view="telemetry">TELEMETRY</button>
 </div>
@@ -305,31 +273,11 @@ audio{display:none}
 <script>
 (()=>{'use strict';
 const API='https://f1-openf1-proxy.alfydunne.workers.dev/v1',POLL_MS=5000,MOTION_POLL_MS=3000,RADIO_POLL_MS=15000,$=id=>document.getElementById(id);
-let sessionKey='latest',lastGood=null,busy=false,firstLoad=true,testMode=false,currentSession=null,driverList=[],selected=new Set(),radioEnabled=false,radioPrimed=false,knownRadio=new Set(),radioQueue=[],radioBusy=false,radioFirstPoll=true,replayPositions=[],replayIntervals=[],replayLaps=[],replayTimes=[],replayIndex=0,replayTimer=null,replayPlaying=false,historicalRadio=[],playedHistoricalRadio=new Set();
+let sessionKey='latest',lastGood=null,busy=false,firstLoad=true,currentSession=null,driverList=[],selected=new Set(),radioEnabled=false,radioPrimed=false,knownRadio=new Set(),radioQueue=[],radioBusy=false,radioFirstPoll=true;
 let motionBusy=false,lastMotionPollAt=0,lastPositionRows=[],lastIntervals=[],lastLapRows=[],locationRows=[],carDataRows=[],trackOutlineRows=[],activeView='leaderboard';
 try{selected=new Set(JSON.parse(localStorage.getItem('f1-radio-drivers')||'[]').map(Number))}catch(e){}
 async function get(path){const r=await fetch(`${API}/${path}`,{cache:'no-store'});if(!r.ok)throw new Error(`OpenF1 returned ${r.status}`);return r.json()}
 function latestByDriver(records){const m=new Map();for(const x of records||[]){const old=m.get(x.driver_number);if(!old||String(x.date||'')>String(old.date||''))m.set(x.driver_number,x)}return m}
-function nearestByDriver(records,stamp,validLocation=false){
-const target=Date.parse(stamp),m=new Map();
-for(const x of records||[]){
-const n=Number(x.driver_number),time=Date.parse(x.date);
-if(!Number.isFinite(n)||!Number.isFinite(time))continue;
-if(validLocation&&(!Number(x.x)||!Number(x.y)))continue;
-const old=m.get(n),distance=Math.abs(time-target);
-if(!old||distance<old.distance)m.set(n,{record:x,distance});
-}
-return new Map([...m].map(([n,v])=>[n,v.record]));
-}
-function interpolatedLocations(records,stamp){
-const target=Date.parse(stamp),groups=new Map();
-for(const row of records||[]){const n=Number(row.driver_number),time=Date.parse(row.date),x=Number(row.x),y=Number(row.y);if(!Number.isFinite(n)||!Number.isFinite(time)||!Number.isFinite(x)||!Number.isFinite(y)||x===0||y===0)continue;if(!groups.has(n))groups.set(n,[]);groups.get(n).push(row)}
-const result=new Map();
-for(const [n,rows] of groups){rows.sort((a,b)=>Date.parse(a.date)-Date.parse(b.date));let before=null,after=null;for(const row of rows){const t=Date.parse(row.date);if(t<=target)before=row;if(t>=target){after=row;break}}
-if(before&&after){const a=Date.parse(before.date),b=Date.parse(after.date),f=b===a?0:Math.max(0,Math.min(1,(target-a)/(b-a)));result.set(n,{...before,x:Number(before.x)+(Number(after.x)-Number(before.x))*f,y:Number(before.y)+(Number(after.y)-Number(before.y))*f,date:stamp})}
-else if(before||after)result.set(n,before||after)}
-return result;
-}
 function gapText(v){if(v===null||v===undefined)return '—';if(typeof v==='string')return v.toUpperCase().includes('LAP')?v.replace(' ',''):v;return `+${Number(v).toFixed(3)}`}
 function render(positionRows,intervalRows,drivers,session,lapRows){
 const positions=latestByDriver(positionRows),intervals=latestByDriver(intervalRows),driverMap=new Map((drivers||[]).map(d=>[d.driver_number,d]));
@@ -350,23 +298,15 @@ $('driverToggle').textContent=selected.size?`DRIVERS ${selected.size}`:'SELECT D
 }
 function saveSelection(){localStorage.setItem('f1-radio-drivers',JSON.stringify([...selected]));drawDriverChoices();$('radioStatus').textContent=selected.size?`${selected.size} driver(s) selected`:'No drivers selected';}
 $('driverChoices').addEventListener('click',e=>{const b=e.target.closest('[data-driver]');if(!b)return;const n=Number(b.dataset.driver);selected.has(n)?selected.delete(n):selected.add(n);saveSelection()});
-async function loadSeasonRaceList(){try{const year=new Date().getFullYear(),now=Date.now();$('raceSelect').innerHTML='<option value="">Loading races…</option>';const sessions=await get(`sessions?year=${year}`);const races=(sessions||[]).filter(s=>s.session_key&&s.date_start&&Date.parse(s.date_start)<=now&&String(s.session_name||'').trim().toLowerCase()==='race').sort((a,b)=>Date.parse(b.date_start)-Date.parse(a.date_start));$('raceSelect').innerHTML=races.length?races.map(s=>`<option value="${s.session_key}">${s.country_name||s.location||'Race'} — ${new Date(s.date_start).toLocaleDateString()}</option>`).join(''):'<option value="">No completed races found</option>';if(races.length)$('replayStatus').textContent=`${races.length} completed ${year} race(s) available`;else $('replayStatus').textContent=`No completed ${year} races yet`}catch(e){$('raceSelect').innerHTML='<option value="">Race list unavailable</option>';$('replayStatus').textContent='Could not load current-season races'}}
-$('liveFeedBtn').onclick=()=>{stopReplay();testMode=false;lastReplayMotionStamp='';lastReplayMotionFetchAt=0;replayMotionRequest++;firstLoad=true;sessionKey='latest';currentSession=null;replayPositions=[];replayIntervals=[];replayLaps=[];replayTimes=[];replayIndex=0;historicalRadio=[];playedHistoricalRadio.clear();radioFirstPoll=true;knownRadio.clear();radioQueue=[];$('replayScrubber').max='0';$('replayScrubber').value='0';$('scrubTime').textContent='00:00';$('replayStatus').textContent='Live timing feed';$('message').textContent='Connecting to live timing…';$('state').textContent='WAIT';$('dot').classList.remove('live');refresh()};
-$('loadSeasonRace').onclick=async()=>{try{stopReplay();const key=$('raceSelect').value;if(!key){$('replayStatus').textContent='Choose a completed race first';return}$('message').textContent='Loading selected race…';const sessions=await get(`sessions?session_key=${key}`);currentSession=sessions?.[0]||null;if(!currentSession)throw new Error('Race session not found');sessionKey=key;testMode=true;lastReplayMotionStamp='';replayMotionRequest++;firstLoad=false;radioFirstPoll=true;knownRadio.clear();radioQueue=[];historicalRadio=[];playedHistoricalRadio.clear();const [p,i,d,l]=await Promise.all([get(`position?session_key=${key}`),get(`intervals?session_key=${key}`),get(`drivers?session_key=${key}`),get(`laps?session_key=${key}`)]);replayPositions=p||[];replayIntervals=i||[];replayLaps=l||[];trackOutlineRows=[];const cleanLap=(replayLaps||[]).filter(x=>x.date_start&&Number(x.lap_duration)>30&&Number(x.lap_duration)<200&&!x.is_pit_out_lap).sort((a,b)=>Number(a.lap_duration)-Number(b.lap_duration))[0];if(cleanLap){const lapStart=Date.parse(cleanLap.date_start),lapEnd=lapStart+Number(cleanLap.lap_duration)*1000;try{const outline=await get(`location?session_key=${key}&driver_number=${cleanLap.driver_number}&date>${encodeURIComponent(new Date(lapStart).toISOString())}&date<${encodeURIComponent(new Date(lapEnd).toISOString())}`);trackOutlineRows=(outline||[]).filter(x=>Number.isFinite(Number(x.x))&&Number.isFinite(Number(x.y))&&Number(x.x)!==0&&Number(x.y)!==0).sort((a,b)=>Date.parse(a.date)-Date.parse(b.date));}catch(e){trackOutlineRows=[]}}locationRows=[];carDataRows=[];replayTimes=[...new Set(replayPositions.map(x=>x.date).filter(Boolean))].sort();if(!replayTimes.length)throw new Error('No replay timing data available for this race');replayIndex=0;$('replayScrubber').max=String(Math.max(0,replayTimes.length-1));$('replayScrubber').value='0';showReplayFrame(0);$('replayStatus').textContent=`${replayTimes.length} replay updates loaded`;$('message').textContent='Race loaded — tap REPLAY RACE';}catch(e){$('message').textContent='RACE LOAD ERROR: '+e.message;$('message').className='error'}};
-function stopReplay(){if(replayTimer)clearTimeout(replayTimer);replayTimer=null;replayPlaying=false;$('replayBtn').textContent='REPLAY RACE'}
-function showReplayFrame(index){if(!replayTimes.length)return;replayIndex=Math.max(0,Math.min(index,replayTimes.length-1));const t=replayTimes[replayIndex],p=replayPositions.filter(x=>x.date<=t),i=replayIntervals.filter(x=>x.date<=t),l=replayLaps.filter(x=>x.date<=t);render(p,i,driverList,currentSession,l);const replayStamp=Date.parse(t);loadReplayMotion(t,p);$('updated').textContent=new Date(t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});$('replayScrubber').value=String(replayIndex);$('scrubTime').textContent=new Date(t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});$('replayStatus').textContent=`Race replay ${Math.round((replayIndex+1)/replayTimes.length*100)}% · ${$('speedSelect').value}×`;if(testMode&&radioEnabled&&historicalRadio.length){const due=historicalRadio.filter(x=>Date.parse(x.date)<=Date.parse(t)&&!playedHistoricalRadio.has(radioKey(x))&&selected.has(Number(x.driver_number)));due.forEach(x=>{playedHistoricalRadio.add(radioKey(x));radioQueue.push(x)});if(due.length){$('radioStatus').textContent=`${new Date(due[0].date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'})} · ${due.length} radio clip(s) due`;playNext()}}}
-function scheduleReplayStep(){if(!replayPlaying)return;showReplayFrame(replayIndex);if(replayIndex>=replayTimes.length-1){stopReplay();$('replayBtn').textContent='REPLAY AGAIN';$('replayStatus').textContent='Race replay finished';return}const a=Date.parse(replayTimes[replayIndex]),b=Date.parse(replayTimes[replayIndex+1]),speed=Number($('speedSelect').value)||1;replayIndex++;const delay=Math.max(50,Number.isFinite(a)&&Number.isFinite(b)?(b-a)/speed:1000/speed);replayTimer=setTimeout(scheduleReplayStep,delay)}
-$('replayScrubber').oninput=()=>{stopReplay();showReplayFrame(Number($('replayScrubber').value));$('replayBtn').textContent='RESUME REPLAY'};
-$('speedSelect').onchange=()=>{if(replayPlaying){if(replayTimer)clearTimeout(replayTimer);scheduleReplayStep()}else if(replayTimes.length)$('replayStatus').textContent=`Paused · ${$('speedSelect').value}×`};
-$('replayBtn').onclick=()=>{if(!replayTimes.length){$('replayStatus').textContent='Load a race first';return}if(replayPlaying){stopReplay();$('replayStatus').textContent='Replay paused';return}if(replayIndex>=replayTimes.length-1)replayIndex=0;replayPlaying=true;$('replayBtn').textContent='PAUSE REPLAY';scheduleReplayStep()};
+$('liveFeedBtn').onclick=()=>{firstLoad=true;sessionKey='latest';currentSession=null;radioFirstPoll=true;knownRadio.clear();radioQueue=[];$('message').textContent='Connecting to live timing…';$('state').textContent='WAIT';$('dot').classList.remove('live');refresh()};
 $('driverToggle').onclick=()=>{$('driverPanel').classList.toggle('open');$('radioStatus').textContent=$('driverPanel').classList.contains('open')?'Choose the drivers you want to hear':'Choose drivers for team radio'};
 $('closePanel').onclick=()=>$('driverPanel').classList.remove('open');
 $('allDrivers').onclick=()=>{selected=new Set(driverList.map(d=>Number(d.driver_number)));saveSelection()};
 $('noDrivers').onclick=()=>{selected.clear();saveSelection()};
-$('radioToggle').onclick=async()=>{radioEnabled=!radioEnabled;$('radioToggle').classList.toggle('active',radioEnabled);$('radioToggle').textContent=radioEnabled?'RADIO ON':'RADIO OFF';if(radioEnabled){radioPrimed=true;if(testMode){historicalRadio=[];playedHistoricalRadio.clear();await pollRadio()}if(!selected.size){$('radioStatus').textContent='Select at least one driver';$('driverPanel').classList.add('open');}else{$('radioStatus').textContent='Listening for selected drivers';await pollRadio();playNext()}}else{$('radioStatus').textContent='Team radio paused';radioQueue=[];$('radioAudio').pause();radioBusy=false}};
+$('radioToggle').onclick=async()=>{radioEnabled=!radioEnabled;$('radioToggle').classList.toggle('active',radioEnabled);$('radioToggle').textContent=radioEnabled?'RADIO ON':'RADIO OFF';if(radioEnabled){radioPrimed=true;if(!selected.size){$('radioStatus').textContent='Select at least one driver';$('driverPanel').classList.add('open');}else{$('radioStatus').textContent='Listening for selected drivers';await pollRadio();playNext()}}else{$('radioStatus').textContent='Team radio paused';radioQueue=[];$('radioAudio').pause();radioBusy=false}};
 function radioKey(x){return `${x.driver_number}|${x.date}|${x.recording_url}`}
 async function pollRadio(){if(!sessionKey||!radioPrimed)return;try{const records=await get(`team_radio?session_key=${sessionKey}`);const ordered=(records||[]).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date)));
-if(testMode){historicalRadio=ordered.filter(x=>x.recording_url);radioFirstPoll=false;$('radioStatus').textContent=historicalRadio.length?`${historicalRadio.length} race radio clips loaded`:'No radio recordings for this race';return}
+
 if(radioFirstPoll){ordered.forEach(x=>knownRadio.add(radioKey(x)));radioFirstPoll=false;return}
 for(const item of ordered){const key=radioKey(item);if(knownRadio.has(key))continue;knownRadio.add(key);if(radioEnabled&&selected.has(Number(item.driver_number))&&item.recording_url)radioQueue.push(item)}
 if(radioQueue.length){$('radioStatus').textContent=`${radioQueue.length} selected radio message(s) queued`;playNext()}else if(radioEnabled&&selected.size)$('radioStatus').textContent='Listening — waiting for selected drivers'
@@ -378,7 +318,7 @@ function topTenNumbers(positionRows){
 return new Set([...latestByDriver(positionRows).entries()].map(([n,p])=>({n:Number(n),position:Number(p.position)})).filter(x=>Number.isFinite(x.position)&&x.position>0).sort((a,b)=>a.position-b.position).slice(0,10).map(x=>x.n));
 }
 async function loadMotionData(key,drivers,positions){
-if(testMode||motionBusy||activeView==='leaderboard')return; // Fetch motion only while its tab is visible.
+if(motionBusy||activeView==='leaderboard')return; // Fetch motion only while its tab is visible.
 motionBusy=true;
 try{
 const cutoff=encodeURIComponent(new Date(Date.now()-15000).toISOString());
@@ -397,28 +337,9 @@ renderTelemetry(positions,drivers,carDataRows);
 }catch(e){/* Keep timing and controls working if motion data is unavailable. */}
 finally{motionBusy=false}
 }
-let lastReplayMotionStamp='',lastReplayMotionFetchAt=0,replayMotionRequest=0;
-async function loadReplayMotion(stamp,positions){
-const stampMs=Date.parse(stamp);
-if(lastReplayMotionStamp===stamp)return;
-if(Number.isFinite(stampMs)&&stampMs-lastReplayMotionFetchAt<1000)return;
-lastReplayMotionStamp=stamp;
-if(Number.isFinite(stampMs))lastReplayMotionFetchAt=stampMs;
-const requestId=++replayMotionRequest,sessionAtRequest=sessionKey;
-try{
-const centre=Date.parse(stamp),from=new Date(centre-4000).toISOString(),to=new Date(centre+4000).toISOString();
-const base=`session_key=${sessionAtRequest}&date>${encodeURIComponent(from)}&date<${encodeURIComponent(to)}`;
-const [loc,cars]=await Promise.all([get(`location?${base}`),get(`car_data?${base}`)]);
-if(!testMode||sessionKey!==sessionAtRequest||requestId!==replayMotionRequest)return;
-const top10=topTenNumbers(positions);locationRows=(loc||[]).filter(x=>top10.has(Number(x.driver_number)));carDataRows=(cars||[]).filter(x=>top10.has(Number(x.driver_number)));
-renderTrack(positions,driverList,stamp);renderTelemetry(positions,driverList,carDataRows,stamp);
-}catch(e){
-if(requestId===replayMotionRequest)$('trackNote').textContent='Historical car location unavailable for this replay time';
-}
-}
 function teamColour(d){return /^([0-9a-f]{6})$/i.test(d?.team_colour||'')?`#${d.team_colour}`:'#aaa'}
-function renderTrack(positionRows,drivers,stamp){
-const svg=$('trackCanvas'),latest=stamp?interpolatedLocations(locationRows,stamp):latestByDriver(locationRows),driverMap=new Map((drivers||[]).map(d=>[Number(d.driver_number),d]));
+function renderTrack(positionRows,drivers){
+const svg=$('trackCanvas'),latest=latestByDriver(locationRows),driverMap=new Map((drivers||[]).map(d=>[Number(d.driver_number),d]));
 const top10=topTenNumbers(positionRows);const points=[...latest.entries()].filter(([n])=>top10.has(Number(n))).map(([n,p])=>({n:Number(n),x:Number(p.x),y:Number(p.y),d:driverMap.get(Number(n))})).filter(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x!==0&&p.y!==0);
 const outline=trackOutlineRows.filter(p=>Number.isFinite(Number(p.x))&&Number.isFinite(Number(p.y))&&Number(p.x)!==0&&Number(p.y)!==0);
 if(!points.length){svg.innerHTML='<text x="250" y="180" fill="#aaa" text-anchor="middle" font-size="16">TRACK DATA NOT AVAILABLE</text>';$('trackNote').textContent='Location data appears when the cars are on track';return}
@@ -435,15 +356,15 @@ const marks=points.map(p=>{const x=ox+(p.x-minX)*scale,y=360-(oy+(p.y-minY)*scal
 svg.innerHTML=`<rect width="500" height="360" fill="transparent"/>${path}<text x="250" y="20" fill="#888" text-anchor="middle" font-size="10" letter-spacing="2">LIVE CAR POSITIONS · ${points.length} CARS</text>${marks}`;
 $('trackNote').textContent=coords.length>2?'Smoothed circuit outline from recorded GPS positions · car markers show current race positions':'Circuit outline unavailable for this session';
 }
-function renderTelemetry(positionRows,drivers,records,stamp){
-const driverMap=new Map((drivers||[]).map(d=>[Number(d.driver_number),d])),positions=latestByDriver(positionRows),data=stamp?nearestByDriver(records,stamp):latestByDriver(records);
+function renderTelemetry(positionRows,drivers,records){
+const driverMap=new Map((drivers||[]).map(d=>[Number(d.driver_number),d])),positions=latestByDriver(positionRows),data=latestByDriver(records);
 const list=[...driverMap.entries()].map(([n,d])=>({n,d,p:positions.get(n),t:data.get(n)})).sort((a,b)=>(Number(a.p?.position)||99)-(Number(b.p?.position)||99)).slice(0,10);
 $('telemetryRows').innerHTML=list.map(x=>{const t=x.t||{},p=Number(x.p?.position)||'–';return `<div class="telemetry-row"><span class="tpos">${p}</span><span class="tdriver"><i class="tbar" style="background:${teamColour(x.d)}"></i>${x.d.name_acronym||x.n}</span><span>${Number.isFinite(Number(t.speed))?Math.round(Number(t.speed)):'–'}</span><span>${t.n_gear??'–'}</span><span>${t.rpm?Math.round(t.rpm):'–'}</span><span>${t.throttle??'–'}</span><span>${t.brake===undefined?'–':(Number(t.brake)>0?'ON':'OFF')}</span></div>`}).join('');
 }
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{activeView=b.dataset.view;document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===activeView+'View'))}));
 
-async function refresh(){if(busy||replayPlaying)return;busy=true;try{
-if(firstLoad&&!testMode){const s=await get('sessions?session_key=latest');currentSession=s?.[0]||null;if(currentSession?.session_key)sessionKey=currentSession.session_key}
+async function refresh(){if(busy)return;busy=true;try{
+if(firstLoad){const s=await get('sessions?session_key=latest');currentSession=s?.[0]||null;if(currentSession?.session_key)sessionKey=currentSession.session_key}
 const [positions,intervals,drivers,laps]=await Promise.all([get(`position?session_key=${sessionKey}`),get(`intervals?session_key=${sessionKey}`),get(`drivers?session_key=${sessionKey}`),firstLoad?get(`laps?session_key=${sessionKey}`):Promise.resolve([])]);
 lastPositionRows=positions;lastIntervals=intervals;if(firstLoad)lastLapRows=laps;
 render(positions,intervals,drivers,currentSession,laps);firstLoad=false;
@@ -452,7 +373,7 @@ if(activeView!=='leaderboard')loadMotionData(sessionKey,drivers,positions);
 }finally{busy=false}}
 // iPhone Safari touch fallback: convert a tap into the same button click action.
 document.addEventListener('touchend',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;e.preventDefault();b.click()},{passive:false});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){refresh();if(activeView!=='leaderboard'&&lastPositionRows.length)loadMotionData(sessionKey,driverList,lastPositionRows)}});window.addEventListener('keydown',e=>{if(['Enter','ArrowDown','ArrowUp'].includes(e.key))refresh()});refresh();loadSeasonRaceList();setInterval(()=>{if(!document.hidden)refresh()},POLL_MS);setInterval(()=>{if(!document.hidden&&activeView!=='leaderboard'&&lastPositionRows.length)loadMotionData(sessionKey,driverList,lastPositionRows)},MOTION_POLL_MS);setInterval(pollRadio,RADIO_POLL_MS);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){refresh();if(activeView!=='leaderboard'&&lastPositionRows.length)loadMotionData(sessionKey,driverList,lastPositionRows)}});window.addEventListener('keydown',e=>{if(['Enter','ArrowDown','ArrowUp'].includes(e.key))refresh()});refresh();setInterval(()=>{if(!document.hidden)refresh()},POLL_MS);setInterval(()=>{if(!document.hidden&&activeView!=='leaderboard'&&lastPositionRows.length)loadMotionData(sessionKey,driverList,lastPositionRows)},MOTION_POLL_MS);setInterval(pollRadio,RADIO_POLL_MS);
 })();
 </script>
 </body></html>
