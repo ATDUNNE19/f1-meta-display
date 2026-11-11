@@ -17,7 +17,7 @@ header{display:flex;align-items:flex-start;justify-content:space-between;padding
 .status{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.7px}
 .dot{width:8px;height:8px;border-radius:50%;background:#8b8b8b;display:inline-block}
 .dot.live{background:#50e080;box-shadow:0 0 9px #50e080}
-.radio-tools{display:flex;gap:8px;padding:9px 0 2px}
+.radio-tools{display:flex;gap:8px;padding:9px 0 2px}.replay-tools{display:flex;gap:8px;align-items:center;padding:3px 0 2px}.replay-tools button{background:#17191c;color:#fff;border:1px solid #555;border-radius:6px;padding:6px 10px;font-size:10px;font-weight:900;touch-action:manipulation}.replay-tools span{font-size:9px;color:var(--muted)}
 .radio-tools button,.panel button{touch-action:manipulation;pointer-events:auto;position:relative;z-index:2;background:#17191c;color:#fff;border:1px solid #555;border-radius:6px;padding:7px 10px;font-size:10px;font-weight:900;letter-spacing:.4px}
 .radio-tools button.active{border-color:#50e080;color:#50e080}
 .radio-tools button:disabled{opacity:.45}
@@ -51,7 +51,7 @@ audio{display:none}
 <main class="screen" aria-label="Formula One live timing leaderboard">
 <header><div><div class="brand">F1 <span style="color:#ff3b30">LIVE TIMING</span></div><div class="session" id="session">CONNECTING TO TIMING DATA</div></div><div class="status"><span class="dot" id="dot"></span><span id="state">WAIT</span></div></header>
 <div class="radio-tools"><button id="testRace" type="button">TEST BRAZIL RACE</button><button id="radioToggle" type="button">RADIO OFF</button><button id="driverToggle" type="button">SELECT DRIVERS</button><span id="radioStatus">Choose drivers for team radio</span></div>
-<section class="panel" id="driverPanel"><div class="panelTitle">TAP EACH DRIVER YOU WANT TO HEAR</div><div id="driverChoices">Waiting for driver list…</div><div class="panelActions"><button id="allDrivers" type="button">SELECT ALL</button><button id="noDrivers" type="button">CLEAR</button><button id="closePanel" type="button">DONE</button></div></section>
+<div class="replay-tools"><button id="replayBtn" type="button">REPLAY RACE</button><span id="replayStatus">Historical race replay</span></div><section class="panel" id="driverPanel"><div class="panelTitle">TAP EACH DRIVER YOU WANT TO HEAR</div><div id="driverChoices">Waiting for driver list…</div><div class="panelActions"><button id="allDrivers" type="button">SELECT ALL</button><button id="noDrivers" type="button">CLEAR</button><button id="closePanel" type="button">DONE</button></div></section>
 <div class="columns"><span>POS</span><span>DRIVER</span><span>TO AHEAD</span><span>TO LEAD</span></div>
 <section id="rows" aria-live="polite"></section><div id="message">Loading latest session…</div>
 <footer><span id="lap">LAP —</span><span id="updated">NO DATA YET</span></footer>
@@ -60,7 +60,7 @@ audio{display:none}
 <script>
 (()=>{'use strict';
 const API='https://f1-openf1-proxy.alfydunne.workers.dev/v1',POLL_MS=10000,RADIO_POLL_MS=15000,$=id=>document.getElementById(id);
-let sessionKey='latest',lastGood=null,busy=false,firstLoad=true,testMode=false,currentSession=null,driverList=[],selected=new Set(),radioEnabled=false,radioPrimed=false,knownRadio=new Set(),radioQueue=[],radioBusy=false,radioFirstPoll=true;
+let sessionKey='latest',lastGood=null,busy=false,firstLoad=true,testMode=false,currentSession=null,driverList=[],selected=new Set(),radioEnabled=false,radioPrimed=false,knownRadio=new Set(),radioQueue=[],radioBusy=false,radioFirstPoll=true,replayPositions=[],replayIntervals=[],replayLaps=[],replayTimes=[],replayIndex=0,replayTimer=null,replayPlaying=false;
 try{selected=new Set(JSON.parse(localStorage.getItem('f1-radio-drivers')||'[]').map(Number))}catch(e){}
 async function get(path){const r=await fetch(`${API}/${path}`,{cache:'no-store'});if(!r.ok)throw new Error(`OpenF1 returned ${r.status}`);return r.json()}
 function latestByDriver(records){const m=new Map();for(const x of records||[]){const old=m.get(x.driver_number);if(!old||String(x.date||'')>String(old.date||''))m.set(x.driver_number,x)}return m}
@@ -83,7 +83,9 @@ $('driverToggle').textContent=selected.size?`DRIVERS ${selected.size}`:'SELECT D
 }
 function saveSelection(){localStorage.setItem('f1-radio-drivers',JSON.stringify([...selected]));drawDriverChoices();$('radioStatus').textContent=selected.size?`${selected.size} driver(s) selected`:'No drivers selected';}
 $('driverChoices').addEventListener('click',e=>{const b=e.target.closest('[data-driver]');if(!b)return;const n=Number(b.dataset.driver);selected.has(n)?selected.delete(n):selected.add(n);saveSelection()});
-$('testRace').onclick=async()=>{try{$('message').textContent='Loading Brazil race test…';const ss=await get('sessions?year=2025&country_name=Brazil&session_name=Race');if(!ss||!ss.length)throw new Error('Brazil 2025 race session not found');currentSession=ss[0];sessionKey=currentSession.session_key;firstLoad=false;testMode=true;radioFirstPoll=true;knownRadio.clear();await refresh();}catch(e){$('message').textContent='TEST ERROR: '+e.message;$('message').className='error';}};
+$('testRace').onclick=async()=>{try{stopReplay();$('message').textContent='Loading Brazil race test…';const ss=await get('sessions?year=2025&country_name=Brazil&session_name=Race');if(!ss||!ss.length)throw new Error('Brazil 2025 race session not found');currentSession=ss[0];sessionKey=currentSession.session_key;testMode=true;firstLoad=false;radioFirstPoll=true;knownRadio.clear();const [p,i,d,l]=await Promise.all([get(`position?session_key=${sessionKey}`),get(`intervals?session_key=${sessionKey}`),get(`drivers?session_key=${sessionKey}`),get(`laps?session_key=${sessionKey}`)]);replayPositions=p||[];replayIntervals=i||[];replayLaps=l||[];replayTimes=[...new Set(replayPositions.map(x=>x.date).filter(Boolean))].sort();if(!replayTimes.length)throw new Error('No timestamped race position data found');render(replayPositions,replayIntervals,d,currentSession,replayLaps);$('replayBtn').disabled=false;$('replayStatus').textContent=`${replayTimes.length} timing updates available`; }catch(e){$('message').textContent='TEST ERROR: '+e.message;$('message').className='error';}};
+function stopReplay(){if(replayTimer)clearInterval(replayTimer);replayTimer=null;replayPlaying=false;$('replayBtn').textContent='REPLAY RACE'}
+$('replayBtn').onclick=()=>{if(!replayTimes.length){$('replayStatus').textContent='Load TEST BRAZIL RACE first';return}if(replayPlaying){stopReplay();$('replayStatus').textContent='Replay paused';return}if(replayIndex>=replayTimes.length)replayIndex=0;replayPlaying=true;$('replayBtn').textContent='PAUSE REPLAY';$('replayStatus').textContent='Playing at 120×';replayTimer=setInterval(()=>{const t=replayTimes[replayIndex];const p=replayPositions.filter(x=>x.date<=t),i=replayIntervals.filter(x=>x.date<=t),l=replayLaps.filter(x=>x.date<=t);render(p,i,driverList,currentSession,l);$('updated').textContent=new Date(t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});$('replayStatus').textContent=`Race replay ${Math.round((replayIndex+1)/replayTimes.length*100)}%`;replayIndex=Math.min(replayIndex+Math.max(1,Math.ceil(replayTimes.length/120)),replayTimes.length);if(replayIndex>=replayTimes.length){stopReplay();$('replayBtn').textContent='REPLAY AGAIN';$('replayStatus').textContent='Race replay finished'}},500)};
 $('driverToggle').onclick=()=>{$('driverPanel').classList.toggle('open');$('radioStatus').textContent=$('driverPanel').classList.contains('open')?'Choose the drivers you want to hear':'Choose drivers for team radio'};
 $('closePanel').onclick=()=>$('driverPanel').classList.remove('open');
 $('allDrivers').onclick=()=>{selected=new Set(driverList.map(d=>Number(d.driver_number)));saveSelection()};
@@ -98,7 +100,7 @@ if(radioQueue.length){$('radioStatus').textContent=`${radioQueue.length} selecte
 function playNext(){if(!radioEnabled||radioBusy||!radioQueue.length)return;const item=radioQueue.shift(),d=driverList.find(x=>Number(x.driver_number)===Number(item.driver_number)),name=d?.name_acronym||`CAR ${item.driver_number}`,audio=$('radioAudio');radioBusy=true;$('radioStatus').textContent=`PLAYING ${name} TEAM RADIO`;audio.src=item.recording_url;audio.play().then(()=>{}).catch(()=>{radioBusy=false;$('radioStatus').textContent='Tap RADIO ON to allow audio playback';});}
 $('radioAudio').addEventListener('ended',()=>{radioBusy=false;playNext()});
 $('radioAudio').addEventListener('error',()=>{radioBusy=false;$('radioStatus').textContent='Could not play this radio recording';playNext()});
-async function refresh(){if(busy)return;busy=true;try{
+async function refresh(){if(busy||replayPlaying)return;busy=true;try{
 if(firstLoad&&!testMode){const s=await get('sessions?session_key=latest');currentSession=s?.[0]||null;if(currentSession?.session_key)sessionKey=currentSession.session_key}
 const [positions,intervals,drivers,laps]=await Promise.all([get(`position?session_key=${sessionKey}`),get(`intervals?session_key=${sessionKey}`),get(`drivers?session_key=${sessionKey}`),firstLoad?get(`laps?session_key=${sessionKey}`):Promise.resolve([])]);
 render(positions,intervals,drivers,currentSession,laps);firstLoad=false;
