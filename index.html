@@ -157,6 +157,7 @@ function topTenNumbers(positionRows){
 return new Set([...latestByDriver(positionRows).entries()].map(([n,p])=>({n:Number(n),position:Number(p.position)})).filter(x=>Number.isFinite(x.position)&&x.position>0).sort((a,b)=>a.position-b.position).slice(0,10).map(x=>x.n));
 }
 async function loadMotionData(key,drivers,positions){
+if(testMode)return; // Historical replay motion is loaded by loadReplayMotion; never overwrite it with a live-time query.
 try{
 const cutoff=encodeURIComponent(new Date(Date.now()-30000).toISOString());
 const [locations,cars]=await Promise.all([get(`location?session_key=${key}&date>${cutoff}`),get(`car_data?session_key=${key}&date>${cutoff}`)]);
