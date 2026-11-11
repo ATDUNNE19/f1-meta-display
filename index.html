@@ -111,6 +111,64 @@ footer{padding:7px 2px 0;border-top:1px solid #292c30;font-size:9px}
   .gap{font-size:10px}
 }
 
+
+/* Meta Ray-Ban Display: 600x600, timing-first layout */
+html,body{width:100%;height:100%;min-height:100%;overflow:hidden}
+.screen{
+  width:min(100vw,600px);height:min(100dvh,600px);aspect-ratio:1;
+  padding:16px 18px 12px;gap:0;background:#000
+}
+header{flex:none;align-items:center;padding:0 0 8px;border-bottom:2px solid #ff3b30}
+.brand{font-size:17px;letter-spacing:1px}
+.session{margin-top:4px;font-size:9px;letter-spacing:.45px;max-width:390px}
+.status{font-size:10px;padding:3px 7px;border:1px solid #34373b;border-radius:20px}
+.dot{width:7px;height:7px}
+.radio-tools{flex:none;flex-wrap:nowrap;gap:5px;padding:7px 0 3px}
+.radio-tools button{padding:5px 7px;font-size:8px;border-radius:5px;white-space:nowrap}
+#radioStatus{font-size:7px;min-width:0}
+.replay-tools{flex:none;gap:5px;padding:3px 0}
+.replay-tools button,.replay-tools select{padding:5px 6px;font-size:8px;border-radius:5px}
+.replay-tools select{width:80px;flex:1}
+.scrub-tools{flex:none;gap:6px;padding:1px 0}
+.scrub-tools input{height:10px}
+.scrub-tools span{font-size:7px}
+#replayStatus{flex:none;min-height:10px;padding:1px 0 2px;font-size:7px}
+.view-tabs{flex:none;gap:5px;padding:5px 0}
+.view-tabs button{padding:6px 3px;font-size:9px;border-radius:5px}
+.view{flex:1;min-height:0}
+.columns,.driver{grid-template-columns:28px minmax(0,1fr) 78px 78px;column-gap:7px}
+.columns{flex:none;padding:5px 2px;font-size:8px}
+#rows{flex:1;min-height:0}
+.driver{flex:1;min-height:0;padding:0 2px;border-bottom:1px solid #34383d}
+.pos{font-size:20px;color:#fff}
+.teambar{width:4px;height:27px}
+.code{font-size:20px;letter-spacing:.6px}
+.number{font-size:9px}
+.gap{font-size:14px;font-weight:900}
+footer{flex:none;padding:5px 2px 0;font-size:8px}
+#message{flex:none;min-height:12px;padding:2px 0;font-size:8px}
+#trackCanvas{min-height:0}
+.track-note{font-size:8px}
+.telemetry-head{flex:none;font-size:8px}
+.telemetry-row{min-height:25px;font-size:10px}
+#telemetryRows{flex:1;min-height:0}
+@media(max-width:420px){
+ .screen{padding:12px 12px 9px}
+ .radio-tools{gap:3px}
+ .radio-tools button{padding:5px 5px;font-size:7px}
+ .replay-tools{gap:3px}
+ .replay-tools button,.replay-tools select{font-size:7px;padding:5px 4px}
+ .columns,.driver{grid-template-columns:24px minmax(0,1fr) 66px 66px;column-gap:5px}
+ .pos{font-size:18px}.code{font-size:17px}.gap{font-size:12px}
+}
+@media(max-height:560px){
+ .screen{height:100dvh;padding-top:8px;padding-bottom:6px}
+ .radio-tools{padding:3px 0 1px}
+ .replay-tools{padding:1px 0}
+ .view-tabs{padding:2px 0}
+ .driver{min-height:22px}
+}
+
 .error{color:#ff9b91}
 audio{display:none}
 @media(max-width:420px){.screen{padding:16px 15px 12px}.columns,.driver{grid-template-columns:25px minmax(0,1fr) 69px 69px;column-gap:5px}.code{font-size:16px}.gap{font-size:11px}.brand{font-size:17px}#driverChoices{grid-template-columns:repeat(3,1fr)}}
