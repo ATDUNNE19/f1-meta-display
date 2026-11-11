@@ -149,7 +149,7 @@ lastReplayMotionStamp=stamp;
 const requestId=++replayMotionRequest,sessionAtRequest=sessionKey;
 try{
 const centre=Date.parse(stamp),from=new Date(centre-1500).toISOString(),to=new Date(centre+1500).toISOString();
-const base=`session_key=${sessionAtRequest}&date>=${encodeURIComponent(from)}&date<=${encodeURIComponent(to)}`;
+const base=`session_key=${sessionAtRequest}&date>${encodeURIComponent(from)}&date<${encodeURIComponent(to)}`;
 const [loc,cars]=await Promise.all([get(`location?${base}`),get(`car_data?${base}`)]);
 if(!testMode||sessionKey!==sessionAtRequest||requestId!==replayMotionRequest)return;
 locationRows=loc||[];carDataRows=cars||[];
