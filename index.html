@@ -216,6 +216,63 @@ footer{padding:3px 5px 0;font-size:clamp(7px,1vw,13px)}
  footer{padding-top:1px}
 }
 
+
+/* Square 600x600 glasses viewport; maximise live timing area. */
+html,body{width:100%;height:100%;overflow:hidden}
+.screen{
+  width:min(100vw,100vh,600px);height:min(100vw,100vh,600px);
+  max-width:600px;max-height:600px;aspect-ratio:1;
+  margin:auto;padding:10px 18px 8px;gap:0
+}
+header{flex:none;padding:0 0 6px;border-bottom:1px solid #34373b}
+.brand{font-size:14px;letter-spacing:.8px}
+.session{font-size:8px;margin-top:3px;max-width:390px}
+.status{font-size:8px;padding:3px 6px}
+.dot{width:6px;height:6px}
+.radio-tools{flex:none;padding:4px 0 2px;gap:4px;flex-wrap:nowrap}
+.radio-tools button{font-size:7px;padding:4px 6px;border-radius:4px}
+#radioStatus{font-size:7px;min-width:0}
+.replay-tools{flex:none;padding:2px 0;gap:4px}
+.replay-tools button,.replay-tools select{font-size:7px;padding:4px 5px;border-radius:4px}
+.replay-tools select{max-width:125px}
+.scrub-tools{flex:none;padding:1px 0;gap:5px}
+.scrub-tools input{height:8px}
+.scrub-tools span{font-size:7px;min-width:32px}
+#replayStatus{flex:none;min-height:10px;padding:1px 0;font-size:7px}
+.view-tabs{flex:none;padding:4px 0 5px;gap:5px}
+.view-tabs button{font-size:8px;padding:5px 3px;border-radius:4px}
+.view{flex:1;min-height:0}
+.columns,.driver{grid-template-columns:7% minmax(0,1fr) 19% 19%;column-gap:6px}
+.columns{flex:none;padding:5px 4px;font-size:9px}
+#rows{display:flex;flex:1;min-height:0;flex-direction:column}
+.driver{flex:1;min-height:0;padding:0 4px}
+.pos{font-size:clamp(19px,4.1vh,25px)}
+.identity{gap:7px}
+.teambar{width:4px;height:75%}
+.code{font-size:clamp(19px,4.2vh,26px);letter-spacing:.3px}
+.number{font-size:clamp(10px,2.1vh,13px)}
+.gap{font-size:clamp(13px,2.8vh,17px)}
+#message{flex:none;min-height:12px;padding:2px 0;font-size:8px}
+footer{flex:none;padding:4px 4px 0;font-size:8px}
+#trackCanvas{min-height:0}
+.telemetry-row{min-height:22px}
+@media(max-width:420px){
+ .screen{padding:8px 10px 6px}
+ .radio-tools{gap:3px}
+ .radio-tools button{padding:4px 4px;font-size:6px}
+ .replay-tools{gap:3px}
+ .replay-tools button,.replay-tools select{padding:4px 3px;font-size:6px}
+ .columns,.driver{grid-template-columns:7% minmax(0,1fr) 19% 19%;column-gap:4px}
+ .code{font-size:clamp(17px,4vh,23px)}
+ .gap{font-size:clamp(12px,2.6vh,15px)}
+}
+@media(max-height:560px){
+ .screen{height:min(100vw,100vh,600px);padding-top:5px;padding-bottom:4px}
+ .radio-tools{padding:2px 0 1px}
+ .replay-tools{padding:1px 0}
+ .view-tabs{padding:2px 0 3px}
+}
+
 .error{color:#ff9b91}
 audio{display:none}
 @media(max-width:420px){.screen{padding:16px 15px 12px}.columns,.driver{grid-template-columns:25px minmax(0,1fr) 69px 69px;column-gap:5px}.code{font-size:16px}.gap{font-size:11px}.brand{font-size:17px}#driverChoices{grid-template-columns:repeat(3,1fr)}}
