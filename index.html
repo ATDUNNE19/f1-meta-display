@@ -169,6 +169,53 @@ footer{flex:none;padding:5px 2px 0;font-size:8px}
  .driver{min-height:22px}
 }
 
+
+/* Landscape glasses layout: leaderboard is the primary surface. */
+html,body{width:100%;height:100%;overflow:hidden}
+.screen{
+  width:100vw;height:100dvh;max-width:none;max-height:none;aspect-ratio:auto;
+  padding:8px 5vw 7px;gap:0
+}
+header{padding:0 0 4px;border-bottom:1px solid #34373b}
+.brand{font-size:13px;letter-spacing:.7px}
+.session{font-size:7px;margin-top:2px}
+.status{font-size:8px;padding:2px 5px}
+.dot{width:6px;height:6px}
+.radio-tools{padding:3px 0 1px;gap:4px;min-height:0}
+.radio-tools button{font-size:7px;padding:3px 5px;border-radius:3px}
+#radioStatus{font-size:6px}
+.replay-tools{padding:1px 0;gap:4px}
+.replay-tools button,.replay-tools select{font-size:7px;padding:3px 5px;border-radius:3px}
+.replay-tools select{max-width:110px}
+.scrub-tools{padding:0;gap:5px}
+.scrub-tools input{height:7px}
+.scrub-tools span{font-size:6px;min-width:30px}
+#replayStatus{font-size:6px;min-height:8px;padding:0}
+.view-tabs{padding:2px 0 4px;gap:4px}
+.view-tabs button{font-size:7px;padding:3px;border-radius:3px}
+.leaderboard-view,.view{min-height:0}
+.columns,.driver{grid-template-columns:7% minmax(0,1fr) 19% 19%;column-gap:5px}
+.columns{padding:4px 5px;font-size:clamp(8px,1.15vw,15px)}
+.driver{padding:0 5px}
+.pos{font-size:clamp(18px,2.8vw,38px)}
+.identity{gap:clamp(5px,.8vw,10px)}
+.teambar{width:clamp(3px,.45vw,6px);height:78%}
+.code{font-size:clamp(18px,3vw,40px);letter-spacing:.3px}
+.number{font-size:clamp(9px,1.5vw,19px)}
+.gap{font-size:clamp(12px,2vw,26px)}
+#rows{flex:1;min-height:0}
+.driver{flex:1;min-height:0}
+#message{font-size:clamp(7px,1.1vw,14px);min-height:0;padding:2px 0}
+footer{padding:3px 5px 0;font-size:clamp(7px,1vw,13px)}
+@media(max-height:500px){
+ .screen{padding-top:4px;padding-bottom:3px}
+ header{padding-bottom:2px}
+ .radio-tools{padding:1px 0}
+ .view-tabs{padding:1px 0 2px}
+ .columns{padding:2px 4px}
+ footer{padding-top:1px}
+}
+
 .error{color:#ff9b91}
 audio{display:none}
 @media(max-width:420px){.screen{padding:16px 15px 12px}.columns,.driver{grid-template-columns:25px minmax(0,1fr) 69px 69px;column-gap:5px}.code{font-size:16px}.gap{font-size:11px}.brand{font-size:17px}#driverChoices{grid-template-columns:repeat(3,1fr)}}
