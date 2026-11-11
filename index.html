@@ -83,9 +83,9 @@ audio{display:none}
 </main>
 <script>
 (()=>{'use strict';
-const API='https://f1-openf1-proxy.alfydunne.workers.dev/v1',POLL_MS=10000,RADIO_POLL_MS=15000,$=id=>document.getElementById(id);
+const API='https://f1-openf1-proxy.alfydunne.workers.dev/v1',POLL_MS=5000,RADIO_POLL_MS=15000,$=id=>document.getElementById(id);
 let sessionKey='latest',lastGood=null,busy=false,firstLoad=true,testMode=false,currentSession=null,driverList=[],selected=new Set(),radioEnabled=false,radioPrimed=false,knownRadio=new Set(),radioQueue=[],radioBusy=false,radioFirstPoll=true,replayPositions=[],replayIntervals=[],replayLaps=[],replayTimes=[],replayIndex=0,replayTimer=null,replayPlaying=false,historicalRadio=[],playedHistoricalRadio=new Set();
-let locationRows=[],carDataRows=[],trackOutlineRows=[],activeView='leaderboard';
+let motionBusy=false,locationRows=[],carDataRows=[],trackOutlineRows=[],activeView='leaderboard';
 try{selected=new Set(JSON.parse(localStorage.getItem('f1-radio-drivers')||'[]').map(Number))}catch(e){}
 async function get(path){const r=await fetch(`${API}/${path}`,{cache:'no-store'});if(!r.ok)throw new Error(`OpenF1 returned ${r.status}`);return r.json()}
 function latestByDriver(records){const m=new Map();for(const x of records||[]){const old=m.get(x.driver_number);if(!old||String(x.date||'')>String(old.date||''))m.set(x.driver_number,x)}return m}
@@ -157,7 +157,8 @@ function topTenNumbers(positionRows){
 return new Set([...latestByDriver(positionRows).entries()].map(([n,p])=>({n:Number(n),position:Number(p.position)})).filter(x=>Number.isFinite(x.position)&&x.position>0).sort((a,b)=>a.position-b.position).slice(0,10).map(x=>x.n));
 }
 async function loadMotionData(key,drivers,positions){
-if(testMode)return; // Historical replay motion is loaded by loadReplayMotion; never overwrite it with a live-time query.
+if(testMode||motionBusy)return; // Historical replay motion is loaded by loadReplayMotion; never overwrite it with a live-time query.
+motionBusy=true;
 try{
 const cutoff=encodeURIComponent(new Date(Date.now()-30000).toISOString());
 const [locations,cars]=await Promise.all([get(`location?session_key=${key}&date>${cutoff}`),get(`car_data?session_key=${key}&date>${cutoff}`)]);
@@ -165,6 +166,7 @@ if(key!==sessionKey)return;
 const top10=topTenNumbers(positions);locationRows=(locations||[]).filter(x=>top10.has(Number(x.driver_number)));carDataRows=(cars||[]).filter(x=>top10.has(Number(x.driver_number)));
 renderTrack(positions,drivers);renderTelemetry(positions,drivers,carDataRows);
 }catch(e){/* Keep timing and controls working if motion data is unavailable. */}
+finally{motionBusy=false}
 }
 let lastReplayMotionStamp='',lastReplayMotionFetchAt=0,replayMotionRequest=0;
 async function loadReplayMotion(stamp,positions){
