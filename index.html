@@ -17,19 +17,19 @@ header{display:flex;align-items:flex-start;justify-content:space-between;padding
 .status{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.7px}
 .dot{width:8px;height:8px;border-radius:50%;background:#8b8b8b;display:inline-block}
 .dot.live{background:#50e080;box-shadow:0 0 9px #50e080}
-.radio-tools{display:flex;gap:8px;padding:9px 0 2px}.replay-tools{display:flex;gap:8px;align-items:center;padding:3px 0 2px}.replay-tools button,.replay-tools select{background:#17191c;color:#fff;border:1px solid #555;border-radius:6px;padding:6px 7px;font-size:10px;font-weight:900;touch-action:manipulation;min-width:0}.replay-tools select{flex:1;width:90px}.scrub-tools{display:flex;align-items:center;gap:8px;padding:5px 0 1px}.scrub-tools input{flex:1;min-width:0;height:16px;accent-color:#ff3b30;touch-action:pan-x}.scrub-tools span{font-size:9px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:38px;text-align:right}
-.radio-tools button,.panel button{touch-action:manipulation;pointer-events:auto;position:relative;z-index:2;background:#17191c;color:#fff;border:1px solid #555;border-radius:6px;padding:7px 10px;font-size:10px;font-weight:900;letter-spacing:.4px}
+.radio-tools{display:flex;gap:5px;padding:4px 0 1px;align-items:center}.replay-tools{display:flex;gap:5px;align-items:center;padding:2px 0 0}.replay-tools button,.replay-tools select{background:#17191c;color:#fff;border:1px solid #555;border-radius:4px;padding:4px 5px;font-size:9px;font-weight:900;touch-action:manipulation;min-width:0}.replay-tools select{flex:1;width:90px}.scrub-tools{display:flex;align-items:center;gap:5px;padding:1px 0}.scrub-tools input{flex:1;min-width:0;height:12px;accent-color:#ff3b30;touch-action:pan-x}.scrub-tools span{font-size:8px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:34px;text-align:right}
+.radio-tools button,.panel button{touch-action:manipulation;pointer-events:auto;position:relative;z-index:2;background:#17191c;color:#fff;border:1px solid #555;border-radius:4px;padding:4px 6px;font-size:9px;font-weight:900;letter-spacing:.2px}
 .radio-tools button.active{border-color:#50e080;color:#50e080}
 .radio-tools button:disabled{opacity:.45}
-#radioStatus{font-size:9px;color:var(--muted);align-self:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.panel{display:none;position:absolute;z-index:10;top:132px;left:15px;right:15px;border:1px solid #777;border-radius:7px;padding:9px;margin:5px 0;background:#111;max-height:190px;overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.8)}
+#radioStatus{font-size:8px;color:var(--muted);align-self:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.panel{display:none;position:absolute;z-index:10;top:92px;left:10px;right:10px;border:1px solid #777;border-radius:5px;padding:6px;margin:3px 0;background:#111;max-height:135px;overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.8)}
 .panel.open{display:block}
-.panelTitle{font-size:10px;color:var(--muted);font-weight:800;margin-bottom:7px}
-#driverChoices{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.panelTitle{font-size:9px;color:var(--muted);font-weight:800;margin-bottom:4px}
+#driverChoices{display:grid;grid-template-columns:repeat(6,1fr);gap:3px}
 .panel button.chosen{border-color:#50e080;color:#50e080;background:#102016}
-.panel .panelActions{display:flex;gap:8px;margin-top:8px}
+.panel .panelActions{display:flex;gap:4px;margin-top:5px}
 .columns,.driver{display:grid;grid-template-columns:30px minmax(0,1fr) 82px 82px;align-items:center;column-gap:8px}
-.columns{padding:12px 0 7px;color:var(--muted);font-size:9px;font-weight:800;letter-spacing:.55px;text-transform:uppercase}
+.columns{padding:6px 0 5px;color:var(--muted);font-size:9px;font-weight:800;letter-spacing:.55px;text-transform:uppercase}
 .columns span:nth-child(3),.columns span:nth-child(4){text-align:right}
 #rows{display:flex;flex-direction:column;flex:1;min-height:0}
 .driver{min-height:0;flex:1;border-bottom:1px solid var(--line);position:relative}
@@ -40,8 +40,8 @@ header{display:flex;align-items:flex-start;justify-content:space-between;padding
 .number{font-size:10px;color:var(--muted);font-weight:700;margin-left:2px}
 .gap{text-align:right;font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
 .gap.ahead{color:#d6d9dd}.gap.leader{color:#fff}
-footer{display:flex;justify-content:space-between;align-items:center;padding-top:11px;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.4px}
-#message{color:#e7e7e7;font-size:11px;text-align:center;padding:4px 0 0;min-height:16px}
+footer{display:flex;justify-content:space-between;align-items:center;padding-top:5px;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.4px}
+#message{color:#e7e7e7;font-size:9px;text-align:center;padding:2px 0 0;min-height:11px}
 .error{color:#ff9b91}
 audio{display:none}
 @media(max-width:420px){.screen{padding:16px 15px 12px}.columns,.driver{grid-template-columns:25px minmax(0,1fr) 69px 69px;column-gap:5px}.code{font-size:16px}.gap{font-size:11px}.brand{font-size:17px}#driverChoices{grid-template-columns:repeat(3,1fr)}}
@@ -50,7 +50,7 @@ audio{display:none}
 <body>
 <main class="screen" aria-label="Formula One live timing leaderboard">
 <header><div><div class="brand">F1 <span style="color:#ff3b30">LIVE TIMING</span></div><div class="session" id="session">CONNECTING TO TIMING DATA</div></div><div class="status"><span class="dot" id="dot"></span><span id="state">WAIT</span></div></header>
-<div class="radio-tools"><button id="testRace" type="button">TEST BRAZIL RACE</button><button id="radioToggle" type="button">RADIO OFF</button><button id="driverToggle" type="button">SELECT DRIVERS</button><span id="radioStatus">Choose drivers for team radio</span></div>
+<div class="radio-tools"><button id="radioToggle" type="button">RADIO OFF</button><button id="driverToggle" type="button">SELECT DRIVERS</button><span id="radioStatus">Choose drivers for team radio</span></div>
 <div class="replay-tools"><select id="raceSelect" aria-label="Choose a race"><option value="">Loading 2026 races…</option></select><button id="loadSeasonRace" type="button">LOAD RACE</button><button id="replayBtn" type="button">REPLAY RACE</button><select id="speedSelect" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="5">5×</option><option value="10">10×</option></select></div><div class="scrub-tools"><input id="replayScrubber" type="range" min="0" max="0" value="0" step="1" aria-label="Scrub through race replay"><span id="scrubTime">00:00</span></div><span id="replayStatus">Choose a 2026 race</span><section class="panel" id="driverPanel"><div class="panelTitle">TAP EACH DRIVER YOU WANT TO HEAR</div><div id="driverChoices">Waiting for driver list…</div><div class="panelActions"><button id="allDrivers" type="button">SELECT ALL</button><button id="noDrivers" type="button">CLEAR</button><button id="closePanel" type="button">DONE</button></div></section>
 <div class="columns"><span>POS</span><span>DRIVER</span><span>TO AHEAD</span><span>TO LEAD</span></div>
 <section id="rows" aria-live="polite"></section><div id="message">Loading latest session…</div>
