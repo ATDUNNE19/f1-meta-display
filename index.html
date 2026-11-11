@@ -83,7 +83,7 @@ audio{display:none}
 </main>
 <script>
 (()=>{'use strict';
-const API='https://f1-openf1-proxy.alfydunne.workers.dev/v1',POLL_MS=5000,RADIO_POLL_MS=15000,$=id=>document.getElementById(id);
+const API='https://f1-openf1-proxy.alfydunne.workers.dev/v1',POLL_MS=2000,RADIO_POLL_MS=15000,$=id=>document.getElementById(id);
 let sessionKey='latest',lastGood=null,busy=false,firstLoad=true,testMode=false,currentSession=null,driverList=[],selected=new Set(),radioEnabled=false,radioPrimed=false,knownRadio=new Set(),radioQueue=[],radioBusy=false,radioFirstPoll=true,replayPositions=[],replayIntervals=[],replayLaps=[],replayTimes=[],replayIndex=0,replayTimer=null,replayPlaying=false,historicalRadio=[],playedHistoricalRadio=new Set();
 let motionBusy=false,locationRows=[],carDataRows=[],trackOutlineRows=[],activeView='leaderboard';
 try{selected=new Set(JSON.parse(localStorage.getItem('f1-radio-drivers')||'[]').map(Number))}catch(e){}
