@@ -153,12 +153,15 @@ if(radioQueue.length){$('radioStatus').textContent=`${radioQueue.length} selecte
 function playNext(){if(!radioEnabled||radioBusy||!radioQueue.length)return;const item=radioQueue.shift(),d=driverList.find(x=>Number(x.driver_number)===Number(item.driver_number)),name=d?.name_acronym||`CAR ${item.driver_number}`,audio=$('radioAudio');radioBusy=true;$('radioStatus').textContent=`PLAYING ${name} TEAM RADIO`;audio.src=item.recording_url;audio.play().then(()=>{}).catch(()=>{radioBusy=false;$('radioStatus').textContent='Tap RADIO ON to allow audio playback';});}
 $('radioAudio').addEventListener('ended',()=>{radioBusy=false;playNext()});
 $('radioAudio').addEventListener('error',()=>{radioBusy=false;$('radioStatus').textContent='Could not play this radio recording';playNext()});
+function topTenNumbers(positionRows){
+return new Set([...latestByDriver(positionRows).entries()].map(([n,p])=>({n:Number(n),position:Number(p.position)})).filter(x=>Number.isFinite(x.position)&&x.position>0).sort((a,b)=>a.position-b.position).slice(0,10).map(x=>x.n));
+}
 async function loadMotionData(key,drivers,positions){
 try{
 const cutoff=encodeURIComponent(new Date(Date.now()-30000).toISOString());
 const [locations,cars]=await Promise.all([get(`location?session_key=${key}&date>${cutoff}`),get(`car_data?session_key=${key}&date>${cutoff}`)]);
 if(key!==sessionKey)return;
-locationRows=locations||[];carDataRows=cars||[];
+const top10=topTenNumbers(positions);locationRows=(locations||[]).filter(x=>top10.has(Number(x.driver_number)));carDataRows=(cars||[]).filter(x=>top10.has(Number(x.driver_number)));
 renderTrack(positions,drivers);renderTelemetry(positions,drivers,carDataRows);
 }catch(e){/* Keep timing and controls working if motion data is unavailable. */}
 }
@@ -175,7 +178,7 @@ const centre=Date.parse(stamp),from=new Date(centre-4000).toISOString(),to=new D
 const base=`session_key=${sessionAtRequest}&date>${encodeURIComponent(from)}&date<${encodeURIComponent(to)}`;
 const [loc,cars]=await Promise.all([get(`location?${base}`),get(`car_data?${base}`)]);
 if(!testMode||sessionKey!==sessionAtRequest||requestId!==replayMotionRequest)return;
-locationRows=loc||[];carDataRows=cars||[];
+const top10=topTenNumbers(positions);locationRows=(loc||[]).filter(x=>top10.has(Number(x.driver_number)));carDataRows=(cars||[]).filter(x=>top10.has(Number(x.driver_number)));
 renderTrack(positions,driverList,stamp);renderTelemetry(positions,driverList,carDataRows,stamp);
 }catch(e){
 if(requestId===replayMotionRequest)$('trackNote').textContent='Historical car location unavailable for this replay time';
@@ -184,7 +187,7 @@ if(requestId===replayMotionRequest)$('trackNote').textContent='Historical car lo
 function teamColour(d){return /^([0-9a-f]{6})$/i.test(d?.team_colour||'')?`#${d.team_colour}`:'#aaa'}
 function renderTrack(positionRows,drivers,stamp){
 const svg=$('trackCanvas'),latest=stamp?interpolatedLocations(locationRows,stamp):latestByDriver(locationRows),driverMap=new Map((drivers||[]).map(d=>[Number(d.driver_number),d]));
-const points=[...latest.entries()].map(([n,p])=>({n:Number(n),x:Number(p.x),y:Number(p.y),d:driverMap.get(Number(n))})).filter(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x!==0&&p.y!==0);
+const top10=topTenNumbers(positionRows);const points=[...latest.entries()].filter(([n])=>top10.has(Number(n))).map(([n,p])=>({n:Number(n),x:Number(p.x),y:Number(p.y),d:driverMap.get(Number(n))})).filter(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x!==0&&p.y!==0);
 const outline=trackOutlineRows.filter(p=>Number.isFinite(Number(p.x))&&Number.isFinite(Number(p.y))&&Number(p.x)!==0&&Number(p.y)!==0);
 if(!points.length){svg.innerHTML='<text x="250" y="180" fill="#aaa" text-anchor="middle" font-size="16">TRACK DATA NOT AVAILABLE</text>';$('trackNote').textContent='Location data appears when the cars are on track';return}
 const allX=[...points.map(p=>p.x),...outline.map(p=>Number(p.x))],allY=[...points.map(p=>p.y),...outline.map(p=>Number(p.y))];
@@ -202,7 +205,7 @@ $('trackNote').textContent=coords.length>2?'Smoothed circuit outline from record
 }
 function renderTelemetry(positionRows,drivers,records,stamp){
 const driverMap=new Map((drivers||[]).map(d=>[Number(d.driver_number),d])),positions=latestByDriver(positionRows),data=stamp?nearestByDriver(records,stamp):latestByDriver(records);
-const list=[...driverMap.entries()].map(([n,d])=>({n,d,p:positions.get(n),t:data.get(n)})).sort((a,b)=>(Number(a.p?.position)||99)-(Number(b.p?.position)||99));
+const list=[...driverMap.entries()].map(([n,d])=>({n,d,p:positions.get(n),t:data.get(n)})).sort((a,b)=>(Number(a.p?.position)||99)-(Number(b.p?.position)||99)).slice(0,10);
 $('telemetryRows').innerHTML=list.map(x=>{const t=x.t||{},p=Number(x.p?.position)||'–';return `<div class="telemetry-row"><span class="tpos">${p}</span><span class="tdriver"><i class="tbar" style="background:${teamColour(x.d)}"></i>${x.d.name_acronym||x.n}</span><span>${Number.isFinite(Number(t.speed))?Math.round(Number(t.speed)):'–'}</span><span>${t.n_gear??'–'}</span><span>${t.rpm?Math.round(t.rpm):'–'}</span><span>${t.throttle??'–'}</span><span>${t.brake===undefined?'–':(Number(t.brake)>0?'ON':'OFF')}</span></div>`}).join('');
 }
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{activeView=b.dataset.view;document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===activeView+'View'))}));
