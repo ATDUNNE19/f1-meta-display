@@ -364,11 +364,21 @@ $('telemetryRows').innerHTML=list.map(x=>{const t=x.t||{},p=Number(x.p?.position
 }
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{activeView=b.dataset.view;document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===activeView+'View'))}));
 
+let lastSessionCheck=0;
 async function refresh(){if(busy)return;busy=true;try{
-if(firstLoad){const s=await get('sessions?session_key=latest');currentSession=s?.[0]||null;if(currentSession?.session_key)sessionKey=currentSession.session_key}
-const [positions,intervals,drivers,laps]=await Promise.all([get(`position?session_key=${sessionKey}`),get(`intervals?session_key=${sessionKey}`),get(`drivers?session_key=${sessionKey}`),firstLoad?get(`laps?session_key=${sessionKey}`):Promise.resolve([])]);
-lastPositionRows=positions;lastIntervals=intervals;if(firstLoad)lastLapRows=laps;
-render(positions,intervals,drivers,currentSession,laps);firstLoad=false;
+if(firstLoad||Date.now()-lastSessionCheck>30000){
+const latest=await get('sessions?session_key=latest'),candidate=latest?.[0]||null;
+if(candidate?.session_key&&String(candidate.session_key)!==String(sessionKey)){
+sessionKey=candidate.session_key;firstLoad=true;lastPositionRows=[];lastIntervals=[];lastLapRows=[];locationRows=[];carDataRows=[];trackOutlineRows=[];
+radioFirstPoll=true;knownRadio.clear();radioQueue=[];
+}
+if(candidate)currentSession=candidate;
+lastSessionCheck=Date.now();
+}
+const needInitial=firstLoad;
+const [positions,intervals,drivers,laps]=await Promise.all([get(`position?session_key=${sessionKey}`),get(`intervals?session_key=${sessionKey}`),get(`drivers?session_key=${sessionKey}`),needInitial?get(`laps?session_key=${sessionKey}`):Promise.resolve(lastLapRows)]);
+lastPositionRows=positions;lastIntervals=intervals;if(needInitial)lastLapRows=laps;
+render(positions,intervals,drivers,currentSession,lastLapRows);firstLoad=false;
 if(activeView!=='leaderboard')loadMotionData(sessionKey,drivers,positions);
 }catch(err){$('dot').classList.remove('live');$('state').textContent='NO LIVE';$('message').textContent=/401|403|429/.test(err.message)?'LIVE DATA ACCESS / LIMIT REACHED':err.message.toUpperCase();$('message').className='error';if(!lastGood)$('session').textContent='WAITING FOR SESSION DATA';
 }finally{busy=false}}
