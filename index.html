@@ -367,12 +367,13 @@ document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',(
 let lastSessionCheck=0;
 async function refresh(){if(busy)return;busy=true;try{
 if(firstLoad||Date.now()-lastSessionCheck>30000){
+try{
 const latest=await get('sessions?session_key=latest'),candidate=latest?.[0]||null;
-if(candidate?.session_key&&String(candidate.session_key)!==String(sessionKey)){
-sessionKey=candidate.session_key;firstLoad=true;lastPositionRows=[];lastIntervals=[];lastLapRows=[];locationRows=[];carDataRows=[];trackOutlineRows=[];
-radioFirstPoll=true;knownRadio.clear();radioQueue=[];
+if(candidate){currentSession=candidate;if(candidate.session_key)sessionKey=candidate.session_key;}
+}catch(sessionLookupError){
+console.warn('Session details unavailable; continuing with OpenF1 latest feeds',sessionLookupError);
+currentSession=null;sessionKey='latest';
 }
-if(candidate)currentSession=candidate;
 lastSessionCheck=Date.now();
 }
 const needInitial=firstLoad;
